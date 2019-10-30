@@ -206,6 +206,13 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
 
     println!();
+    println!("Attacker:");
+    println!("Explosive DPS: {}", test.explosive_dps);
+    println!("  Kinetic DPS: {}", test.kinetic_dps);
+    println!("  Thermal DPS: {}", test.thermal_dps);
+    println!(" Absolute DPS: {}", test.absolute_dps);
+    println!("Effectiveness: {}%", test.damage_effectiveness * 100.0);
+    println!();
 
     match best_result {
         None => {
