@@ -1,6 +1,5 @@
 use std::path::PathBuf;
 use std::error::Error;
-use std::path::Path;
 use std::io::Read;
 
 use itertools::Itertools;
@@ -82,20 +81,6 @@ struct TestResult {
     stats: LoadoutStat
 }
 
-fn load_csv<P, T>(path: P) -> Result<Vec<T>, csv::Error>
-where
-    P: AsRef<Path>,
-    T: DeserializeOwned,
-{
-    let mut reader = csv::Reader::from_path(path)?;
-    let mut ret = vec![];
-    for record in reader.deserialize() {
-        let record: T = record?;
-        ret.push(record);
-    }
-    Ok(ret)
-}
-
 fn parse_csv<T, R>(s: R) -> Result<Vec<T>, csv::Error>
 where
     R: Read,
@@ -170,27 +155,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if let Some(ref path) = test.shield_csv {
         println!("Custom Shield CSV: {}", path.display());
-        generators = load_csv(path)?;
+        generators = parse_csv(std::fs::File::open(path)?)?;
     }
 
     if let Some(ref path) = test.booster_csv {
         println!("Custom Booster CSV: {}", path.display());
-        boosters = load_csv(path)?;
+        boosters = parse_csv(std::fs::File::open(path)?)?;
     }
 
     let generators = generators;
     let boosters = boosters;
 
     println!("Loaded {} shields and {} boosters", generators.len(), boosters.len());
-
-    // let test = TestConfig {
-    //     shield_booster_count: 7,
-    //     explosive_dps: 14.0,
-    //     kinetic_dps: 18.0,
-    //     thermal_dps: 110.0,
-    //     absolute_dps: 0.0,
-    //     damage_effectiveness: 0.25,
-    // };
 
     let mut best_survival_time = 0.0;
     let mut best_result: Option<TestResult> = None;
