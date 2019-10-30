@@ -1,6 +1,6 @@
-use std::path::PathBuf;
 use std::error::Error;
 use std::io::Read;
+use std::path::PathBuf;
 
 use itertools::Itertools;
 use serde::de::DeserializeOwned;
@@ -46,7 +46,10 @@ struct LoadoutStat {
 }
 
 #[derive(Debug, Clone, StructOpt)]
-#[structopt(name = "elite_shield_tester", about = "Rust port of Down To Earth Astronomy's script")]
+#[structopt(
+    name = "elite_shield_tester",
+    about = "Rust port of Down To Earth Astronomy's script"
+)]
 struct TestConfig {
     /// Number of shield boosters to fit
     #[structopt(short, long, default_value = "1")]
@@ -78,13 +81,13 @@ struct TestConfig {
 struct TestResult {
     shield: ShieldGenerator,
     boosters: Vec<ShieldBooster>,
-    stats: LoadoutStat
+    stats: LoadoutStat,
 }
 
 fn parse_csv<T, R>(s: R) -> Result<Vec<T>, csv::Error>
 where
     R: Read,
-    T: DeserializeOwned
+    T: DeserializeOwned,
 {
     let mut reader = csv::Reader::from_reader(s);
     let mut ret = vec![];
@@ -150,8 +153,10 @@ fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f32 {
 fn main() -> Result<(), Box<dyn Error>> {
     let test = TestConfig::from_args();
 
-    let mut generators: Vec<ShieldGenerator> = parse_csv(&include_bytes!("../data/ShieldGeneratorVariants.csv")[..])?;
-    let mut boosters: Vec<ShieldBooster> = parse_csv(&include_bytes!("../data/ShieldBoosterVariants.csv")[..])?;
+    let mut generators: Vec<ShieldGenerator> =
+        parse_csv(&include_bytes!("../data/ShieldGeneratorVariants.csv")[..])?;
+    let mut boosters: Vec<ShieldBooster> =
+        parse_csv(&include_bytes!("../data/ShieldBoosterVariants.csv")[..])?;
 
     if let Some(ref path) = test.shield_csv {
         println!("Custom Shield CSV: {}", path.display());
@@ -166,7 +171,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     let generators = generators;
     let boosters = boosters;
 
-    println!("Loaded {} shields and {} boosters", generators.len(), boosters.len());
+    println!(
+        "Loaded {} shields and {} boosters",
+        generators.len(),
+        boosters.len()
+    );
 
     let mut best_survival_time = 0.0;
     let mut best_result: Option<TestResult> = None;
@@ -185,13 +194,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             if survival_time > best_survival_time {
                 best_survival_time = survival_time;
-                best_result = Some(
-                    TestResult {
-                        shield: shield.clone(),
-                        boosters: booster_loadout.iter().cloned().cloned().collect(),
-                        stats
-                    }
-                );
+                best_result = Some(TestResult {
+                    shield: shield.clone(),
+                    boosters: booster_loadout.iter().cloned().cloned().collect(),
+                    stats,
+                });
             }
         }
     }
@@ -203,7 +210,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     match best_result {
         None => {
             println!("Nothing useful to report.");
-        },
+        }
         Some(res) => {
             println!("Survival Time [s]: [{:.1}]", best_survival_time);
             println!(
@@ -221,7 +228,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Shield Regen: [{:.1} hp/s]", res.stats.regen_rate);
             println!("Explosive Resistance: [{:.1}%]", res.stats.exp_res * 100.0);
             println!("  Kinetic Resistance: [{:.1}%]", res.stats.kin_res * 100.0);
-            println!("  Thermal Resistance: [{:.1}%]", res.stats.therm_res * 100.0);
+            println!(
+                "  Thermal Resistance: [{:.1}%]",
+                res.stats.therm_res * 100.0
+            );
         }
     }
 
