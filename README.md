@@ -1,10 +1,14 @@
 # Elite Dangerous Shield Tester
 
-This is a Rust rewrite of Down to Earth Astronomy's [Shield Tester] PowerShell
-script, demonstrated in [this video].
+This is a [Rust] rewrite of Down to Earth Astronomy's [Shield Tester] PowerShell
+script, as demonstrated in [this video].
 
-It's about quarter of a million times faster, but for some reason gives different
-results for survival time and may make different suggestions.
+It allows for determining the optimal combinations of shield, shield boosters
+and engineering modifications to defend against a given assailant in the space
+simulation game [Elite Dangerous].
+
+This version runs a great deal faster, and can also be queried via a [website].
+
 
 ## Usage
 
@@ -58,3 +62,6 @@ Explosive Resistance: [39.4%]
 
 [Shield Tester]: https://github.com/DownToEarthAstronomy/D2EA_Shield_tester
 [this video]: https://www.youtube.com/watch?v=87DMWz8IeEE
+[Elite Dangerous]: https://www.elitedangerous.com/
+[website]: https://hur.st/shieldtester/
+[Rust]: https://www.rust-lang.org/
