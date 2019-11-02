@@ -79,11 +79,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "elite_shield_tester"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "csv 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "itertools 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
+ "serde_plain 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "structopt 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -181,6 +182,14 @@ dependencies = [
  "proc-macro2 1.0.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "quote 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 1.0.7 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "serde_plain"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -289,6 +298,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum ryu 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)" = "bfa8506c1de11c9c4e4c38863ccbe02a305c8188e85a05a784c9e11e1c3910c8"
 "checksum serde 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)" = "0c4b39bd9b0b087684013a792c59e3e07a46a01d2322518d8a1104641a0b1be0"
 "checksum serde_derive 1.0.102 (registry+https://github.com/rust-lang/crates.io-index)" = "ca13fc1a832f793322228923fbb3aba9f3f44444898f835d31ad1b74fa0a2bf8"
+"checksum serde_plain 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "625fb0da2b006092b426a94acc1611bec52f2ec27bb27b266a9f93c29ee38eda"
 "checksum strsim 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "8ea5119cdb4c55b55d432abb513a0429384878c15dde60cc77b1c99de1a95a6a"
 "checksum structopt 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "6d4f66a4c0ddf7aee4677995697366de0749b0139057342eccbb609b12d0affc"
 "checksum structopt-derive 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)" = "8fe0c13e476b4e21ff7f5c4ace3818b6d7bdc16897c31c73862471bc1663acae"

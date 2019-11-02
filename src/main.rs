@@ -4,8 +4,75 @@ use std::path::PathBuf;
 
 use itertools::Itertools;
 use serde::de::DeserializeOwned;
-use serde::Deserialize;
+use serde::{Serialize,Deserialize};
 use structopt::StructOpt;
+use serde_plain::forward_display_to_serde;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum ShieldKind {
+    Normal,
+    #[serde(rename = "Bi-Weave")]
+    BiWeave,
+    Prismatic,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum ShieldEngineering {
+    #[serde(rename = "Kinetic Resistance")]
+    KineticResistance,
+    Reinforced,
+    #[serde(rename = "Thermal Resistance")]
+    ThermalResistance,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum ShieldExperimental {
+    #[serde(rename = "Fast Charge")]
+    FastCharge,
+    #[serde(rename = "Multi-Weave")]
+    MultiWeave,
+    #[serde(rename = "Hi-Cap")]
+    HiCap,
+    #[serde(rename = "Thermo Block")]
+    ThermoBlock,
+    #[serde(rename = "Force Block")]
+    ForceBlock,
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum BoosterEngineering {
+    #[serde(rename = "Kinetic Resistance")]
+    KineticResistance,
+    #[serde(rename = "Thermal Resistance")]
+    ThermalResistance,
+    #[serde(rename = "Blast Resistance")]
+    BlastResistance,
+    #[serde(rename = "Heavy Duty")]
+    HeavyDuty,
+    #[serde(rename = "Resistance Augmented")]
+    ResistanceAugmented
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+enum BoosterExperimental {
+    #[serde(rename = "Thermo Block")]
+    ThermoBlock,
+    #[serde(rename = "Force Block")]
+    ForceBlock,
+    #[serde(rename = "Blast Block")]
+    BlastBlock,
+    #[serde(rename = "Super Capacitors")]
+    SuperCapacitors
+}
+
+forward_display_to_serde!(ShieldKind);
+forward_display_to_serde!(ShieldEngineering);
+forward_display_to_serde!(ShieldExperimental);
+forward_display_to_serde!(BoosterEngineering);
+forward_display_to_serde!(BoosterExperimental);
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "PascalCase")]
@@ -13,9 +80,9 @@ struct ShieldGenerator {
     #[serde(rename = "ID")]
     id: u8,
     #[serde(rename = "Type")]
-    kind: String,
-    engineering: String,
-    experimental: String,
+    kind: ShieldKind,
+    engineering: ShieldEngineering,
+    experimental: ShieldExperimental,
     shield_strength: f32,
     regen_rate: f32,
     exp_res: f32,
@@ -28,8 +95,8 @@ struct ShieldGenerator {
 struct ShieldBooster {
     #[serde(rename = "ID")]
     id: u8,
-    engineering: String,
-    experimental: String,
+    engineering: BoosterEngineering,
+    experimental: BoosterExperimental,
     shield_strength_bonus: f32,
     exp_res_bonus: f32,
     kin_res_bonus: f32,
