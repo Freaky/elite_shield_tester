@@ -102,12 +102,12 @@ fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &[&ShieldBooster]
     let mut exp_modifier = 1.0;
     let mut kin_modifier = 1.0;
     let mut therm_modifier = 1.0;
-    let mut hit_point_bonus = 0.0;
+    let mut hit_point_bonus = 1.0;
 
     for booster in boosters.iter() {
-        exp_modifier *= 1.0 - booster.exp_res_bonus;
-        kin_modifier *= 1.0 - booster.kin_res_bonus;
-        therm_modifier *= 1.0 - booster.therm_res_bonus;
+        exp_modifier *= booster.exp_res_bonus;
+        kin_modifier *= booster.kin_res_bonus;
+        therm_modifier *= booster.therm_res_bonus;
 
         hit_point_bonus += booster.shield_strength_bonus;
     }
@@ -124,26 +124,20 @@ fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &[&ShieldBooster]
         therm_modifier = 0.7 - (0.7 - therm_modifier) / 2.0;
     }
 
-    let exp_res = 1.0 - ((1.0 - shield.exp_res) * exp_modifier);
-    let kin_res = 1.0 - ((1.0 - shield.kin_res) * kin_modifier);
-    let therm_res = 1.0 - ((1.0 - shield.therm_res) * therm_modifier);
-
-    let hit_points = (1.0 + hit_point_bonus) * shield.shield_strength;
-
     LoadoutStat {
-        hit_points,
-        exp_res,
-        kin_res,
-        therm_res,
+        hit_points: hit_point_bonus * shield.shield_strength,
+        exp_res: shield.exp_res * exp_modifier,
+        kin_res: shield.kin_res * kin_modifier,
+        therm_res: shield.therm_res * therm_modifier,
         regen_rate: shield.regen_rate,
     }
 }
 
 fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f32 {
     let actual_dps = test.damage_effectiveness
-        * (test.explosive_dps * (1.0 - loadout.exp_res)
-            + test.kinetic_dps * (1.0 - loadout.kin_res)
-            + test.thermal_dps * (1.0 - loadout.therm_res)
+        * (test.explosive_dps * loadout.exp_res
+            + test.kinetic_dps * loadout.kin_res
+            + test.thermal_dps * loadout.therm_res
             + test.absolute_dps)
         - loadout.regen_rate * (1.0 - test.damage_effectiveness);
 
@@ -166,6 +160,19 @@ fn main() -> Result<(), Box<dyn Error>> {
     if let Some(ref path) = test.booster_csv {
         println!("Custom Booster CSV: {}", path.display());
         boosters = parse_csv(std::fs::File::open(path)?)?;
+    }
+
+    // Convert resistances to resonances to avoid writing 1.0 - bla everywhere
+    for gen in generators.iter_mut() {
+        gen.exp_res = 1.0 - gen.exp_res;
+        gen.kin_res = 1.0 - gen.kin_res;
+        gen.therm_res = 1.0 - gen.therm_res;
+    }
+
+    for booster in boosters.iter_mut() {
+        booster.exp_res_bonus = 1.0 - booster.exp_res_bonus;
+        booster.kin_res_bonus = 1.0 - booster.kin_res_bonus;
+        booster.therm_res_bonus = 1.0 - booster.therm_res_bonus;
     }
 
     let generators = generators;
@@ -235,18 +242,18 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Shield Regen: {:.1} Mj/s", res.stats.regen_rate);
             println!(
                 "Explosive Resistance: {:.1}% ({:.0} Mj)",
-                res.stats.exp_res * 100.0,
-                res.stats.hit_points / (1.0 - res.stats.exp_res)
+                (1.0 - res.stats.exp_res) * 100.0,
+                res.stats.hit_points / res.stats.exp_res
             );
             println!(
                 "  Kinetic Resistance: {:.1}% ({:.0} Mj)",
-                res.stats.kin_res * 100.0,
-                res.stats.hit_points / (1.0 - res.stats.kin_res)
+                (1.0 - res.stats.kin_res) * 100.0,
+                res.stats.hit_points / res.stats.kin_res
             );
             println!(
                 "  Thermal Resistance: {:.1}% ({:.0} Mj)",
-                res.stats.therm_res * 100.0,
-                res.stats.hit_points / (1.0 - res.stats.therm_res)
+                (1.0 - res.stats.therm_res) * 100.0,
+                res.stats.hit_points / res.stats.therm_res
             );
         }
     }
