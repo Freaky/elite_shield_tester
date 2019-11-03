@@ -219,32 +219,32 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Nothing useful to report.");
         }
         Some(res) => {
-            println!("Survival Time: [{:.1} s]", best_survival_time);
+            println!("Survival Time: {:.1} s", best_survival_time);
             println!(
-                "Shield Generator: [{}] - [{}] - [{}]",
+                "Shield Generator: {} - {} - {}",
                 res.shield.kind, res.shield.engineering, res.shield.experimental
             );
             println!("Shield Boosters:");
 
             for booster in res.boosters {
-                println!("  [{}] - [{}]", booster.engineering, booster.experimental);
+                println!(" * {} - {}", booster.engineering, booster.experimental);
             }
 
             println!();
-            println!("Shield Hitpoints: [{:.0} Mj]", res.stats.hit_points);
-            println!("Shield Regen: [{:.1} Mj/s]", res.stats.regen_rate);
+            println!("Shield Hitpoints: {:.0} Mj", res.stats.hit_points);
+            println!("Shield Regen: {:.1} Mj/s", res.stats.regen_rate);
             println!(
-                "Explosive Resistance: [{:.1}%] [{:.0} Mj]",
+                "Explosive Resistance: {:.1}% ({:.0} Mj)",
                 res.stats.exp_res * 100.0,
                 res.stats.hit_points / (1.0 - res.stats.exp_res)
             );
             println!(
-                "  Kinetic Resistance: [{:.1}%] [{:.0} Mj]",
+                "  Kinetic Resistance: {:.1}% ({:.0} Mj)",
                 res.stats.kin_res * 100.0,
                 res.stats.hit_points / (1.0 - res.stats.kin_res)
             );
             println!(
-                "  Thermal Resistance: [{:.1}%] [{:.0} Mj]",
+                "  Thermal Resistance: {:.1}% ({:.0} Mj)",
                 res.stats.therm_res * 100.0,
                 res.stats.hit_points / (1.0 - res.stats.therm_res)
             );
