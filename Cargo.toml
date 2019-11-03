@@ -11,3 +11,7 @@ csv = "1.1.1"
 serde = { version = "1", features = ["derive"] }
 itertools = "0.8.0"
 structopt = "0.3.3"
+
+[profile.release]
+lto = true
+codegen-units = 1
