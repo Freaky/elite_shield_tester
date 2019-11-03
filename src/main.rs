@@ -211,7 +211,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("  Kinetic DPS: {}", test.kinetic_dps);
     println!("  Thermal DPS: {}", test.thermal_dps);
     println!(" Absolute DPS: {}", test.absolute_dps);
-    println!("Effectiveness: {}%", test.damage_effectiveness * 100.0);
+    println!("Effectiveness: {:.1}%", test.damage_effectiveness * 100.0);
     println!();
 
     match best_result {
@@ -219,7 +219,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Nothing useful to report.");
         }
         Some(res) => {
-            println!("Survival Time [s]: [{:.1}]", best_survival_time);
+            println!("Survival Time: [{:.1} s]", best_survival_time);
             println!(
                 "Shield Generator: [{}] - [{}] - [{}]",
                 res.shield.kind, res.shield.engineering, res.shield.experimental
@@ -227,17 +227,26 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Shield Boosters:");
 
             for booster in res.boosters {
-                println!("[{}] - [{}]", booster.engineering, booster.experimental);
+                println!("  [{}] - [{}]", booster.engineering, booster.experimental);
             }
 
             println!();
-            println!("Shield Hitpoints: [{:.1}]", res.stats.hit_points);
-            println!("Shield Regen: [{:.1} hp/s]", res.stats.regen_rate);
-            println!("Explosive Resistance: [{:.1}%]", res.stats.exp_res * 100.0);
-            println!("  Kinetic Resistance: [{:.1}%]", res.stats.kin_res * 100.0);
+            println!("Shield Hitpoints: [{:.0} Mj]", res.stats.hit_points);
+            println!("Shield Regen: [{:.1} Mj/s]", res.stats.regen_rate);
             println!(
-                "  Thermal Resistance: [{:.1}%]",
-                res.stats.therm_res * 100.0
+                "Explosive Resistance: [{:.1}%] [{:.0} Mj]",
+                res.stats.exp_res * 100.0,
+                res.stats.hit_points / (1.0 - res.stats.exp_res)
+            );
+            println!(
+                "  Kinetic Resistance: [{:.1}%] [{:.0} Mj]",
+                res.stats.kin_res * 100.0,
+                res.stats.hit_points / (1.0 - res.stats.kin_res)
+            );
+            println!(
+                "  Thermal Resistance: [{:.1}%] [{:.0} Mj]",
+                res.stats.therm_res * 100.0,
+                res.stats.hit_points / (1.0 - res.stats.therm_res)
             );
         }
     }
