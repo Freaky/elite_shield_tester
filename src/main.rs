@@ -217,7 +217,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     for booster_loadout in boosters
         .iter()
-        .combinations_with_replacement(test.shield_booster_count as usize)
+        .combinations_with_replacement(test.shield_booster_count.min(8) as usize)
     {
         for shield in generators.iter() {
             loadouts += 1;
