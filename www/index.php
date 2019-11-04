@@ -4,8 +4,8 @@ define('TESTER_PATH', "/home/freaky/elite_shield_tester/");
 define('LOCK_PATH', '/tmp/shield_tester.lock');
 define('OWN_URL', '/shieldtester/');
 
-function try_lock() {
-  $fp = @fopen(LOCK_PATH, "w");
+function try_lock($kind = "") {
+  $fp = @fopen(LOCK_PATH . $kind, "w");
   if ($fp && @flock($fp, LOCK_EX)) {
     return $fp;
   }
@@ -46,21 +46,26 @@ function try_calculate() {
   }
 
   $trim = 0;
+  $kind = ".fast";
 
   if (!empty($args) && !isset($_GET['prismatics'])) {
-    $trim++;
-    $args[] = "--shield-csv $path/data/ShieldGeneratorVariants_no_prismatics.csv";
+    $args[] = "--disable-prismatic";
   }
 
-  if (@$_GET['boosters'] > 6) {
-    $trim++;
-    $args[] = "--booster-csv $path/data/ShieldBoosterVariants_short.csv";
+  $boosters = max(1, min((int)@$_GET['boosters'], 8));
+  if ($boosters <= 6) {
+    $args[] = "--disable-filter";
+  }
+
+  if ($boosters >= 6) {
+    $args[] = "--force-experimental";
+    $kind = ".$boosters";
   }
 
   $result = "";
 
   if (!empty($args) && $dps > 0) {
-    if ($l = try_lock()) {
+    if ($l = try_lock($kind)) {
       $args = implode(" ", $args);
       @exec("$path/elite_shield_tester $args", $result);
       $result = implode("\n", array_slice($result, $trim));
@@ -253,7 +258,7 @@ function formint($name, $default = 0) {
       });
     </script>
 
-    <meta name="description" content="Elite: Dangerous - Find the best shield and shield booster engineering for your ship">
+    <meta name="description" content="Elite Dangerous - Find the best shield and shield booster engineering for your ship">
     <meta name="author" content="Thomas Hurst">
   </head>
   <body>
@@ -267,18 +272,13 @@ function formint($name, $default = 0) {
         </p>
 
         <p>
-          The program is a direct <a href="https://www.rust-lang.org/">Rust</a> rewrite of
+          The program is a <a href="https://www.rust-lang.org/">Rust</a> rewrite of
           <a href="https://www.youtube.com/channel/UCg3QI9rHzPgvR7KTKSCtPHg">Down to Earth Astronomy</a>'s
           <a href="https://github.com/DownToEarthAstronomy/D2EA_Shield_tester">shield tester</a>,
           as shown in
           <a href="https://www.youtube.com/watch?v=87DMWz8IeEE">this video</a>.
           It is neither affiliated with nor endorsed by D2EA.  Source code is available
           <a href="https://github.com/Freaky/elite_shield_tester">on Github</a>.
-        </p>
-
-        <p>
-          To limit computational cost, the booster list is restricted to a smaller
-          subset when more than 6 are used.
         </p>
       </section>
 
@@ -314,6 +314,8 @@ function formint($name, $default = 0) {
         <fieldset><legend>Neat Buttons</legend>
           <input type="submit" value="Calculate">
           <input type="reset" value="Reset">
+
+          <p>Note: more than 6 boosters may take several seconds. Please be patient.</p>
         </fieldset>
       </form>
     </main>
