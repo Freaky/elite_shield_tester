@@ -69,6 +69,15 @@ struct TestConfig {
     /// Attacker shot success ratio, 0-1
     #[structopt(short, long, default_value = "0.5")]
     damage_effectiveness: f32,
+    /// Filter out prismatic shields
+    #[structopt(long)]
+    disable_prismatic: bool,
+    /// Require experimental effects (~5x faster)
+    #[structopt(long)]
+    force_experimental: bool,
+    /// Disable pre-filtering (debugging)
+    #[structopt(long)]
+    disable_filter: bool,
     /// Override default shield list
     #[structopt(long)]
     shield_csv: Option<PathBuf>,
@@ -162,21 +171,37 @@ fn main() -> Result<(), Box<dyn Error>> {
         boosters = parse_csv(std::fs::File::open(path)?)?;
     }
 
-    // Convert resistances to resonances to avoid writing 1.0 - bla everywhere
-    for gen in generators.iter_mut() {
-        gen.exp_res = 1.0 - gen.exp_res;
-        gen.kin_res = 1.0 - gen.kin_res;
-        gen.therm_res = 1.0 - gen.therm_res;
-    }
+    let boosters: Vec<ShieldBooster> = boosters
+        .into_iter()
+        .map(|mut booster| {
+            // Convert resistances to resonances
+            booster.exp_res_bonus = 1.0 - booster.exp_res_bonus;
+            booster.kin_res_bonus = 1.0 - booster.kin_res_bonus;
+            booster.therm_res_bonus = 1.0 - booster.therm_res_bonus;
+            booster
+        })
+        .filter(|booster| {
+            !test.force_experimental || booster.experimental != "No Experimental Effect"
+        })
+        .filter(|booster| {
+            // Naively filter out irrelevant boosters
+            test.disable_filter
+                || !(test.explosive_dps == 0.0 && (booster.engineering == "Blast Resistance")
+                    || test.kinetic_dps == 0.0 && (booster.engineering == "Kinetic Resistance")
+                    || test.thermal_dps == 0.0 && (booster.engineering == "Thermal Resistance"))
+        })
+        .collect();
 
-    for booster in boosters.iter_mut() {
-        booster.exp_res_bonus = 1.0 - booster.exp_res_bonus;
-        booster.kin_res_bonus = 1.0 - booster.kin_res_bonus;
-        booster.therm_res_bonus = 1.0 - booster.therm_res_bonus;
-    }
-
-    let generators = generators;
-    let boosters = boosters;
+    let generators: Vec<ShieldGenerator> = generators
+        .into_iter()
+        .map(|mut shield| {
+            shield.exp_res = 1.0 - shield.exp_res;
+            shield.kin_res = 1.0 - shield.kin_res;
+            shield.therm_res = 1.0 - shield.therm_res;
+            shield
+        })
+        .filter(|shield| !(test.disable_prismatic && shield.kind == "Prismatic"))
+        .collect();
 
     println!(
         "Loaded {} shields and {} boosters",
@@ -199,7 +224,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             let stats = calculate_loadout_stats(&shield, &booster_loadout[..]);
             let survival_time = calculate_survival_time(&test, &stats);
 
-            if survival_time > best_survival_time {
+            // Negative survival times indicate regen exceeds DPS
+            if (survival_time < 0.0
+                && (best_survival_time >= 0.0 || survival_time > best_survival_time))
+                || (survival_time >= 0.0
+                    && best_survival_time >= 0.0
+                    && survival_time > best_survival_time)
+            {
                 best_survival_time = survival_time;
                 best_result = Some(TestResult {
                     shield: shield.clone(),
@@ -226,7 +257,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Nothing useful to report.");
         }
         Some(res) => {
-            println!("Survival Time: {:.1} s", best_survival_time);
+            if best_survival_time < 0.0 {
+                println!("Survival Time: ∞");
+            } else {
+                println!("Survival Time: {:.1} s", best_survival_time);
+            }
             println!(
                 "Shield Generator: {} - {} - {}",
                 res.shield.kind, res.shield.engineering, res.shield.experimental
