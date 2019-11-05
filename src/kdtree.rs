@@ -69,7 +69,7 @@ impl KDTreeNode {
                 .iter()
                 .take(k)
                 .zip(point.iter())
-                .any(|(loc, p)| loc < p)
+                .any(|(loc, p)| loc <= p)
             {
                 return true;
             }
