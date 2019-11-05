@@ -54,11 +54,11 @@ function try_calculate() {
 
   $boosters = max(1, min((int)@$_GET['boosters'], 8));
   if ($boosters <= 6) {
-    $args[] = "--disable-filter";
+    // $args[] = "--disable-filter";
   }
 
   if ($boosters >= 6) {
-    $args[] = "--force-experimental";
+    // $args[] = "--force-experimental";
     $kind = ".$boosters";
   }
 
@@ -268,17 +268,21 @@ function formint($name, $default = 0) {
       <section>
         <p>
           Determine the best shield engineering for your <a href="https://www.elitedangerous.com/">Elite Dangerous</a>
-          warship through the advanced application of pure computational brute force.
+          warship through fancy algorithms and a smidgen of computational brute force.
         </p>
 
         <p>
-          The program is a <a href="https://www.rust-lang.org/">Rust</a> rewrite of
+          This website is a frontend to a <a href="https://www.rust-lang.org/">Rust</a> rework of
           <a href="https://www.youtube.com/channel/UCg3QI9rHzPgvR7KTKSCtPHg">Down to Earth Astronomy</a>'s
           <a href="https://github.com/DownToEarthAstronomy/D2EA_Shield_tester">shield tester</a>,
           as shown in
           <a href="https://www.youtube.com/watch?v=87DMWz8IeEE">this video</a>.
           It is neither affiliated with nor endorsed by D2EA.  Source code is available
           <a href="https://github.com/Freaky/elite_shield_tester">on Github</a>.
+        </p>
+
+        <p>
+          Special thanks to <a href="https://github.com/ntt">Jamie "Entity" van den Berge</a> for the algorithm that makes this so fast.
         </p>
       </section>
 
@@ -314,8 +318,6 @@ function formint($name, $default = 0) {
         <fieldset><legend>Neat Buttons</legend>
           <input type="submit" value="Calculate">
           <input type="reset" value="Reset">
-
-          <p>Note: more than 6 boosters may take several seconds. Please be patient.</p>
         </fieldset>
       </form>
     </main>
