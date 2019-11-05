@@ -7,6 +7,9 @@ use serde::de::DeserializeOwned;
 use serde::Deserialize;
 use structopt::StructOpt;
 
+mod combinations;
+mod kdtree;
+
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct ShieldGenerator {
@@ -16,63 +19,63 @@ struct ShieldGenerator {
     kind: String,
     engineering: String,
     experimental: String,
-    shield_strength: f32,
-    regen_rate: f32,
-    exp_res: f32,
-    kin_res: f32,
-    therm_res: f32,
+    shield_strength: f64,
+    regen_rate: f64,
+    exp_res: f64,
+    kin_res: f64,
+    therm_res: f64,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct ShieldBooster {
     #[serde(rename = "ID")]
     id: u8,
     engineering: String,
     experimental: String,
-    shield_strength_bonus: f32,
-    exp_res_bonus: f32,
-    kin_res_bonus: f32,
-    therm_res_bonus: f32,
+    shield_strength_bonus: f64,
+    exp_res_bonus: f64,
+    kin_res_bonus: f64,
+    therm_res_bonus: f64,
 }
 
 #[derive(Debug, Clone)]
 struct LoadoutStat {
-    hit_points: f32,
-    regen_rate: f32,
-    exp_res: f32,
-    kin_res: f32,
-    therm_res: f32,
+    hit_points: f64,
+    regen_rate: f64,
+    exp_res: f64,
+    kin_res: f64,
+    therm_res: f64,
 }
 
 #[derive(Debug, Clone, StructOpt)]
 #[structopt(
     name = "elite_shield_tester",
-    about = "Rust port of Down To Earth Astronomy's script"
+    about = "Elite Dangerous Shield Optimiser"
 )]
 struct TestConfig {
     /// Number of shield boosters to fit
     #[structopt(short, long, default_value = "1")]
-    shield_booster_count: u8,
+    shield_booster_count: usize,
     /// Explosive damage per second
     #[structopt(short, long, default_value = "0")]
-    explosive_dps: f32,
+    explosive_dps: f64,
     /// Kinetic damage per second
     #[structopt(short, long, default_value = "0")]
-    kinetic_dps: f32,
+    kinetic_dps: f64,
     /// Thermal damage per second
     #[structopt(short, long, default_value = "0")]
-    thermal_dps: f32,
+    thermal_dps: f64,
     /// Absolute damage per second
     #[structopt(short, long, default_value = "0")]
-    absolute_dps: f32,
+    absolute_dps: f64,
     /// Attacker shot success ratio, 0-1
     #[structopt(short, long, default_value = "0.5")]
-    damage_effectiveness: f32,
+    damage_effectiveness: f64,
     /// Filter out prismatic shields
     #[structopt(long)]
     disable_prismatic: bool,
-    /// Require experimental effects (~5x faster)
+    /// Require experimental effects
     #[structopt(long)]
     force_experimental: bool,
     /// Disable pre-filtering (debugging)
@@ -142,7 +145,7 @@ fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &[&ShieldBooster]
     }
 }
 
-fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f32 {
+fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f64 {
     let actual_dps = test.damage_effectiveness
         * (test.explosive_dps * loadout.exp_res
             + test.kinetic_dps * loadout.kin_res
@@ -183,13 +186,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter(|booster| {
             !test.force_experimental || booster.experimental != "No Experimental Effect"
         })
-        .filter(|booster| {
-            // Naively filter out irrelevant boosters
-            test.disable_filter
-                || !(test.explosive_dps == 0.0 && (booster.engineering == "Blast Resistance")
-                    || test.kinetic_dps == 0.0 && (booster.engineering == "Kinetic Resistance")
-                    || test.thermal_dps == 0.0 && (booster.engineering == "Thermal Resistance"))
-        })
         .collect();
 
     let generators: Vec<ShieldGenerator> = generators
@@ -209,38 +205,76 @@ fn main() -> Result<(), Box<dyn Error>> {
         boosters.len()
     );
 
+    // Filter the booster list using Jamie van den Berge's algorithm:
+    //
+    // Take each pair of booster, plot their values in a kdtree (effectively
+    // modelling a 4-dimensional booster-space), and use that to find pairs which
+    // will always be beaten by other pairs on all dimensions.
+    //
+    // The combinations algorithm then only returns results to test which consist
+    // of these pairs.
+    let pairs: Vec<Vec<&ShieldBooster>> =
+        boosters.iter().combinations_with_replacement(2).collect();
+
+    let pair_metrics: Vec<_> = pairs
+        .iter()
+        .enumerate()
+        .map(|(id, pair)| {
+            let exp_res = pair[0].exp_res_bonus * pair[1].exp_res_bonus;
+            let kin_res = pair[0].kin_res_bonus * pair[1].kin_res_bonus;
+            let therm_res = pair[0].therm_res_bonus * pair[1].therm_res_bonus;
+            let shield_strength_bonus =
+                pair[0].shield_strength_bonus + pair[1].shield_strength_bonus;
+            vec![-exp_res, -therm_res, -kin_res, shield_strength_bonus, id as f64]
+        })
+        .collect();
+
+    let mut tmp_metrics = pair_metrics.clone();
+    let tree = kdtree::KDTreeNode::from_points(&mut tmp_metrics[..]).unwrap();
+
+    let filtered_pairs: Vec<(ShieldBooster, ShieldBooster)> = pairs
+        .into_iter()
+        .zip(pair_metrics.iter())
+        .filter(|(_, item)| test.disable_filter || !tree.dominates(&item[..]))
+        .map(|(p, _)| (p[0].clone(), p[1].clone()))
+        .collect();
+
     let mut best_survival_time = 0.0;
     let mut best_result: Option<TestResult> = None;
 
     let mut loadouts = 0;
     let start = std::time::Instant::now();
 
-    for booster_loadout in boosters
-        .iter()
-        .combinations_with_replacement(test.shield_booster_count.min(8) as usize)
-    {
-        for shield in generators.iter() {
-            loadouts += 1;
-            let stats = calculate_loadout_stats(&shield, &booster_loadout[..]);
-            let survival_time = calculate_survival_time(&test, &stats);
+    combinations::unique_selections_from_pairs(
+        &boosters[..],
+        &filtered_pairs[..],
+        test.shield_booster_count.min(8),
+        0,
+        |booster_loadout| {
+            for shield in generators.iter() {
+                loadouts += 1;
+                let stats = calculate_loadout_stats(&shield, &booster_loadout[..]);
+                let survival_time = calculate_survival_time(&test, &stats);
 
-            // Negative survival times indicate regen exceeds DPS
-            if (survival_time < 0.0
-                && (best_survival_time >= 0.0 || survival_time > best_survival_time))
-                || (survival_time >= 0.0
-                    && best_survival_time >= 0.0
-                    && survival_time > best_survival_time)
-            {
-                best_survival_time = survival_time;
-                best_result = Some(TestResult {
-                    shield: shield.clone(),
-                    boosters: booster_loadout.iter().cloned().cloned().collect(),
-                    stats,
-                });
+                // Negative survival times indicate regen exceeds DPS
+                if (survival_time < 0.0
+                    && (best_survival_time >= 0.0 || survival_time > best_survival_time))
+                    || (survival_time >= 0.0
+                        && best_survival_time >= 0.0
+                        && survival_time > best_survival_time)
+                {
+                    best_survival_time = survival_time;
+                    best_result = Some(TestResult {
+                        shield: shield.clone(),
+                        boosters: booster_loadout.iter().cloned().cloned().collect(),
+                        stats,
+                    });
+                }
             }
-        }
-    }
+        },
+    );
 
+    println!("Elite Shield Tester Rust Edition v{}", env!("CARGO_PKG_VERSION"));
     println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
 
     println!();
