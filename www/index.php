@@ -100,11 +100,12 @@ function formint($name, $default = 0) {
         max-width: 800px;
         margin: auto;
         font-family: sans-serif;
-        background: #eee;
+        background: black;
+        color: #ccc;
       }
 
       h1 strong {
-        color: black;
+        color: #ff3b00;
         text-shadow: none;
         display: block;
       }
@@ -112,38 +113,37 @@ function formint($name, $default = 0) {
       h1 span {
         display: block;
         margin-left: 1em;
-        text-shadow: 0 0 8px #0f0, 0 0 8px #00F;
-        color: white;
+        color: rgb(11,176,255);
         animation: shields 8s ease-in-out infinite alternate;
       }
 
       @keyframes shields {
         0% {
-          text-shadow: 0 0 8px #f00, 0 0 8px #00F;
+          color: rgba(11,176,255, 1.0);
         }
 
         16% {
-          text-shadow: 0 0 20px #f00, 0 0 20px #00F;
+          color: rgba(11,176,255, 0.7);
         }
 
         32% {
-          text-shadow: 0 0 8px #0f0, 0 0 8px #00F;
+          color: rgba(128,0,128, 1.0);
         }
 
         48% {
-          text-shadow: 0 0 20px #0f0, 0 0 20px #00F;
+          color: rgba(128,0,128, 0.7);
         }
 
         64% {
-          text-shadow: 0 0 8px #00f, 0 0 8px #00F;
+          color: rgba(113,160,82, 1.0);
         }
 
         80% {
-          text-shadow: 0 0 20px #00f, 0 0 20px #00F;
+          color: rgba(113,160,82, 0.7);
         }
 
         100% {
-          text-shadow: 0 0 8px #f00, 0 0 8px #00F;
+          color: rgba(11,176,255, 1.0);
         }
       }
 
@@ -155,7 +155,7 @@ function formint($name, $default = 0) {
         appearance: none;
         width: 90%;
         height: 1em;
-        background: #d3d3d3;
+        background: rgb(245,59,0);
         outline: none;
         opacity: 0.7;
         transition: opacity .2s;
@@ -170,14 +170,14 @@ function formint($name, $default = 0) {
         appearance: none;
         width: 1.2em;
         height: 1.2em;
-        background: #4CAF50;
+        background: rgb(255, 170, 33);
         cursor: pointer;
       }
 
       input[type="range"]::-moz-range-thumb {
         width: 1.2em;
         height: 1.2em;
-        background: #4CAF50;
+        background: rgb(255, 170, 33);
         cursor: pointer;
       }
 
@@ -185,7 +185,7 @@ function formint($name, $default = 0) {
         display: inline-block;
         text-align: right;
         margin: 0 1em 0 0;
-        color: darkred;
+        color: rgb(255,59,0);
         font-weight: bold;
         width: 3em;
       }
@@ -202,12 +202,13 @@ function formint($name, $default = 0) {
         max-width: 600px;
         margin: auto;
         padding: 0.2em 0.4em;
-        background: white;
+        background: rgb(28, 15, 0);
         border: 1px solid black;
       }
 
       pre {
         margin-bottom: 2em;
+        color: white;
       }
 
       h1 a {
@@ -218,11 +219,18 @@ function formint($name, $default = 0) {
         font-weight: bolder;
       }
 
-      a:link, a:visited {
+      a:link {
+        color: rgb(220,140,13);
+        text-decoration: none;
+      }
+
+      a:visited {
+        color: rgb(200,140,13);
         text-decoration: none;
       }
 
       a:hover, a:active {
+        color: rgb(255,140,13);
         text-decoration: underline;
       }
     </style>
