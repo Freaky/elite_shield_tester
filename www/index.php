@@ -206,13 +206,13 @@ function formint($name, $default = 0) {
       section, pre {
         max-width: 600px;
         margin: auto;
-        padding: 0.2em 0.4em;
+        padding: 0.2em 1em;
         background: rgb(28, 15, 0);
         border: 1px solid black;
       }
 
       pre {
-        margin-bottom: 2em;
+        margin: 8px auto;
         color: white;
       }
 
@@ -221,6 +221,7 @@ function formint($name, $default = 0) {
         border: solid 1px rgb(255, 140, 13);
         color: rgb(255, 140, 13);
         font-size: larger;
+        padding: 8px;
       }
 
       h1 a {
@@ -341,19 +342,22 @@ function formint($name, $default = 0) {
           <button type="reset">Reset</button>
           <button type="button" onclick="window.location.href='<?php echo OWN_URL ?>'">Restart</button>
         </fieldset>
-      </form>
-    </main>
 
 <?php
     $result = try_calculate();
     if (!empty($result)) {
 ?>
+    <fieldset><legend>Result</legend>
       <pre>
 <?php echo htmlentities($result); ?>
       </pre>
+    </fieldset>
 <?php
     }
 ?>
+      </form>
+    </main>
+
 
   </body>
 </html>
