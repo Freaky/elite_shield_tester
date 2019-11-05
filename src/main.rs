@@ -110,7 +110,23 @@ where
     Ok(ret)
 }
 
-fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &[&ShieldBooster]) -> LoadoutStat {
+fn diminish_res(res: f64) -> f64 {
+    if res < 0.7 {
+        0.7 - (0.7 - res) / 2.0
+    } else {
+        res
+    }
+}
+
+#[derive(Debug, Clone)]
+struct BoosterStat {
+    exp_modifier: f64,
+    kin_modifier: f64,
+    therm_modifier: f64,
+    hit_point_bonus: f64
+}
+
+fn calculate_booster_stats(boosters: &[&ShieldBooster]) -> BoosterStat {
     let mut exp_modifier = 1.0;
     let mut kin_modifier = 1.0;
     let mut therm_modifier = 1.0;
@@ -124,23 +140,20 @@ fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &[&ShieldBooster]
         hit_point_bonus += booster.shield_strength_bonus;
     }
 
-    if exp_modifier < 0.7 {
-        exp_modifier = 0.7 - (0.7 - exp_modifier) / 2.0;
+    BoosterStat {
+        exp_modifier: diminish_res(exp_modifier),
+        kin_modifier: diminish_res(kin_modifier),
+        therm_modifier: diminish_res(therm_modifier),
+        hit_point_bonus
     }
+}
 
-    if kin_modifier < 0.7 {
-        kin_modifier = 0.7 - (0.7 - kin_modifier) / 2.0;
-    }
-
-    if therm_modifier < 0.7 {
-        therm_modifier = 0.7 - (0.7 - therm_modifier) / 2.0;
-    }
-
+fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &BoosterStat) -> LoadoutStat {
     LoadoutStat {
-        hit_points: hit_point_bonus * shield.shield_strength,
-        exp_res: shield.exp_res * exp_modifier,
-        kin_res: shield.kin_res * kin_modifier,
-        therm_res: shield.therm_res * therm_modifier,
+        hit_points: boosters.hit_point_bonus * shield.shield_strength,
+        exp_res: shield.exp_res * boosters.exp_modifier,
+        kin_res: shield.kin_res * boosters.kin_modifier,
+        therm_res: shield.therm_res * boosters.therm_modifier,
         regen_rate: shield.regen_rate,
     }
 }
@@ -269,9 +282,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         test.shield_booster_count.min(8),
         0,
         |booster_loadout| {
+            let booster_stat = calculate_booster_stats(&booster_loadout[..]);
             for shield in generators.iter() {
                 loadouts += 1;
-                let stats = calculate_loadout_stats(&shield, &booster_loadout[..]);
+                let stats = calculate_loadout_stats(&shield, &booster_stat);
                 let survival_time = calculate_survival_time(&test, &stats);
 
                 // Negative survival times indicate regen exceeds DPS
