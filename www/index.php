@@ -53,12 +53,13 @@ function try_calculate() {
   }
 
   $boosters = max(1, min((int)@$_GET['boosters'], 8));
-  if ($boosters <= 6) {
-    // $args[] = "--disable-filter";
-  }
+  // if ($boosters <= 6) {
+  //   $args[] = "--disable-filter";
+  // }
 
-  if ($boosters >= 6) {
-    // $args[] = "--force-experimental";
+  if ($boosters > 6) {
+    // These never seem to help
+    $args[] = "--force-experimental";
     $kind = ".$boosters";
   }
 
