@@ -186,6 +186,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter(|booster| {
             !test.force_experimental || booster.experimental != "No Experimental Effect"
         })
+        .filter(|booster| {
+            // Naively filter out irrelevant boosters
+            test.disable_filter
+                || !(test.explosive_dps == 0.0 && (booster.engineering == "Blast Resistance")
+                    || test.kinetic_dps == 0.0 && (booster.engineering == "Kinetic Resistance")
+                    || test.thermal_dps == 0.0 && (booster.engineering == "Thermal Resistance"))
+        })
         .collect();
 
     let generators: Vec<ShieldGenerator> = generators
@@ -197,6 +204,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             shield
         })
         .filter(|shield| !(test.disable_prismatic && shield.kind == "Prismatic"))
+        .filter(|shield| {
+            // Naively filter out irrelevant shields
+            test.disable_filter
+                || !(test.kinetic_dps == 0.0 && (shield.engineering == "Kinetic Resistance")
+                    || test.thermal_dps == 0.0 && (shield.engineering == "Thermal Resistance"))
+        })
         .collect();
 
     println!(
@@ -225,7 +238,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             let therm_res = pair[0].therm_res_bonus * pair[1].therm_res_bonus;
             let shield_strength_bonus =
                 pair[0].shield_strength_bonus + pair[1].shield_strength_bonus;
-            vec![-exp_res, -therm_res, -kin_res, shield_strength_bonus, id as f64]
+            vec![
+                -exp_res,
+                -therm_res,
+                -kin_res,
+                shield_strength_bonus,
+                id as f64,
+            ]
         })
         .collect();
 
@@ -274,7 +293,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     );
 
-    println!("Elite Shield Tester Rust Edition v{}", env!("CARGO_PKG_VERSION"));
+    println!(
+        "Elite Shield Tester Rust Edition v{}",
+        env!("CARGO_PKG_VERSION")
+    );
     println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
 
     println!();
