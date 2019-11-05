@@ -149,6 +149,7 @@ function formint($name, $default = 0) {
 
       fieldset {
         margin: 1em;
+        border-color: rgb(245,59,0);
       }
 
       input[type="range"] {
