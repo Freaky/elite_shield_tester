@@ -88,4 +88,4 @@ Please report if this changes any results.
 [Elite Dangerous]: https://www.elitedangerous.com/
 [website]: https://hur.st/shieldtester/
 [Rust]: https://www.rust-lang.org/
-[Jamie "Entity" ven den Berge]: https://github.com/ntt
+[Jamie "Entity" van den Berge]: https://github.com/ntt
