@@ -101,7 +101,7 @@ function formint($name, $default = 0) {
         margin: auto;
         font-family: sans-serif;
         background: black;
-        color: #ccc;
+        color: #ddd;
       }
 
       h1 strong {
@@ -150,6 +150,10 @@ function formint($name, $default = 0) {
       fieldset {
         margin: 1em;
         border-color: rgb(245,59,0);
+      }
+
+      legend {
+        color: #ff3b00;;
       }
 
       input[type="range"] {
@@ -210,6 +214,13 @@ function formint($name, $default = 0) {
       pre {
         margin-bottom: 2em;
         color: white;
+      }
+
+      button {
+        background-color: rgb(38, 25, 0);
+        border: solid 1px rgb(255, 140, 13);
+        color: rgb(255, 140, 13);
+        font-size: larger;
       }
 
       h1 a {
@@ -326,8 +337,9 @@ function formint($name, $default = 0) {
         </fieldset>
 
         <fieldset><legend>Neat Buttons</legend>
-          <input type="submit" value="Calculate">
-          <input type="reset" value="Reset">
+          <button type="submit">Calculate</button>
+          <button type="reset">Reset</button>
+          <button type="button" onclick="window.location.href='<?php echo OWN_URL ?>'">Restart</button>
         </fieldset>
       </form>
     </main>
