@@ -77,7 +77,7 @@ Explosive Resistance: 40.6% (2472 Mj)
 This tool is based on a [PowerShell script] originally by YouTuber [Down To Earth Astronomy],
 and demonstrated in [this video].
 
-It now uses an algorithm developed by [Jamie "Entity" ven den Berge], which offers
+It now uses an algorithm developed by [Jamie "Entity" van den Berge], which offers
 amazing speedups from the naive approach.  Use `--disable-filter` to bypass this.
 Please report if this changes any results.
 
