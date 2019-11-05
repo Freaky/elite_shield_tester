@@ -157,6 +157,7 @@ function formint($name, $default = 0) {
       }
 
       input[type="range"] {
+        -webkit-appearance: none;
         appearance: none;
         width: 90%;
         height: 1em;
@@ -224,8 +225,22 @@ function formint($name, $default = 0) {
         padding: 8px;
       }
 
-      h1 a {
-        color: black;
+      input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        background-color: rgb(38, 25, 0);
+        border: 1px solid rgb(255, 140, 13);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+        padding: 1em 8em;
+        width: 99%;
+        border-radius: 3px;
+        display: inline-block;
+        transition: background-color .3s;
+      }
+
+      input[type="checkbox"]:checked {
+        background-color: rgb(113,160,82);
+        transition: background-color .3s;
       }
 
       a {
@@ -332,9 +347,8 @@ function formint($name, $default = 0) {
             <input type="range" name="boosters" value="<?php formint('boosters', 2) ?>" min="1" max="8">
           </label><br>
 
-          <label>Allow Prismatic Shields
-            <input type="checkbox" name="prismatics" <?php if (isset($_GET['prismatics'])) { echo 'checked="checked"'; } ?>>
-          </label>
+          <label for="prismatics">Allow Prismatic Shields</label>
+          <input type="checkbox" name="prismatics" <?php if (isset($_GET['prismatics'])) { echo 'checked="checked"'; } ?>>
         </fieldset>
 
         <fieldset><legend>Neat Buttons</legend>
