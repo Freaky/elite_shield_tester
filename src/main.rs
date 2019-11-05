@@ -159,6 +159,11 @@ fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f64 {
 fn main() -> Result<(), Box<dyn Error>> {
     let test = TestConfig::from_args();
 
+    println!(
+        "Elite Shield Tester Rust Edition v{}",
+        env!("CARGO_PKG_VERSION")
+    );
+
     let mut generators: Vec<ShieldGenerator> =
         parse_csv(&include_bytes!("../data/ShieldGeneratorVariants.csv")[..])?;
     let mut boosters: Vec<ShieldBooster> =
@@ -204,12 +209,6 @@ fn main() -> Result<(), Box<dyn Error>> {
             shield
         })
         .filter(|shield| !(test.disable_prismatic && shield.kind == "Prismatic"))
-        .filter(|shield| {
-            // Naively filter out irrelevant shields
-            test.disable_filter
-                || !(test.kinetic_dps == 0.0 && (shield.engineering == "Kinetic Resistance")
-                    || test.thermal_dps == 0.0 && (shield.engineering == "Thermal Resistance"))
-        })
         .collect();
 
     println!(
@@ -293,10 +292,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     );
 
-    println!(
-        "Elite Shield Tester Rust Edition v{}",
-        env!("CARGO_PKG_VERSION")
-    );
     println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
 
     println!();
@@ -314,7 +309,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Some(res) => {
             if best_survival_time < 0.0 {
-                println!("Survival Time: ∞");
+                println!("Survival Time: ∞ ({:.1} s)", best_survival_time);
             } else {
                 println!("Survival Time: {:.1} s", best_survival_time);
             }
