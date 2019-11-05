@@ -99,9 +99,13 @@ function formint($name, $default = 0) {
       body {
         max-width: 800px;
         margin: auto;
-        font-family: sans-serif;
+        font-family: Monaco, "Lucida Console", "Courier", sans-serif;
         background: black;
         color: #ddd;
+      }
+
+      h1 {
+        font-family: Tahoma, sans-serif;
       }
 
       h1 strong {
