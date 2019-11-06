@@ -72,6 +72,12 @@ struct TestConfig {
     /// Attacker shot success ratio, 0-1
     #[structopt(short, long, default_value = "0.5")]
     damage_effectiveness: f64,
+    /// Mj available via Shield Cell Banks
+    #[structopt(long, default_value = "0")]
+    shield_cell_mj: f64,
+    /// Mj provided by Guardian Shield Reinforcements
+    #[structopt(long, default_value = "0")]
+    reinforced_mj: f64,
     /// Filter out prismatic shields
     #[structopt(long)]
     disable_prismatic: bool,
@@ -285,7 +291,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             let booster_stat = calculate_booster_stats(&booster_loadout[..]);
             for shield in generators.iter() {
                 loadouts += 1;
-                let stats = calculate_loadout_stats(&shield, &booster_stat);
+                let mut stats = calculate_loadout_stats(&shield, &booster_stat);
+                // These are flat bonuses on top, not affected by booster stats
+                stats.hit_points += test.reinforced_mj + test.shield_cell_mj;
                 let survival_time = calculate_survival_time(&test, &stats);
 
                 // Negative survival times indicate regen exceeds DPS
@@ -309,7 +317,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
 
     println!();
-    println!("Attacker:");
+    println!("Test Setup:");
+    println!("Shield Boosters: {}", test.shield_booster_count);
+    println!("Shield Cell Bank Pool: {:.1} Mj", test.shield_cell_mj);
+    println!("Guardian Shield Reinforcement: {:.1} Mj", test.reinforced_mj);
     println!("Explosive DPS: {}", test.explosive_dps);
     println!("  Kinetic DPS: {}", test.kinetic_dps);
     println!("  Thermal DPS: {}", test.thermal_dps);

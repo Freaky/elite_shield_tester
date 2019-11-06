@@ -1,6 +1,6 @@
 [package]
 name = "elite_shield_tester"
-version = "0.3.2"
+version = "0.4.0"
 authors = ["Thomas Hurst <tom@hur.st>"]
 edition = "2018"
 

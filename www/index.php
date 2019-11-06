@@ -24,6 +24,8 @@ function try_calculate() {
     'dps_explosive' => '-e',
     'dps_absolute' => '-a',
     'effectiveness' => '-d',
+    'shield_cell_mj' => '--shield-cell-mj',
+    'reinforced_mj' => '--reinforced-mj',
     'boosters' => '-s'
   );
 
@@ -86,6 +88,8 @@ function formint($name, $default = 0) {
     echo $default;
   }
 }
+
+$about = empty($_GET);
 
 ?>
 <!doctype html>
@@ -306,6 +310,7 @@ function formint($name, $default = 0) {
     <h1 id="Head"><a href="<?php echo OWN_URL ?>"><strong>Elite Dangerous</strong> <span>Shield Loadout Optimiser</span></a></h1>
 
     <main>
+      <?php if ($about) { ?>
       <section>
         <p>
           Determine the best shield engineering for your <a href="https://www.elitedangerous.com/">Elite Dangerous</a>
@@ -326,6 +331,7 @@ function formint($name, $default = 0) {
           Special thanks to <a href="https://github.com/ntt">Jamie "Entity" van den Berge</a> for the algorithm that makes this so fast.
         </p>
       </section>
+      <?php } ?>
 
       <form id="Testform" action="<?php echo OWN_URL ?>" method="get">
         <fieldset><legend>Attacker Damage Per Second</legend>
@@ -349,6 +355,14 @@ function formint($name, $default = 0) {
         <fieldset><legend>Defender</legend>
           <label>Shield Boosters<br>
             <input type="range" name="boosters" value="<?php formint('boosters', 2) ?>" min="1" max="8">
+          </label><br>
+
+          <label>Shield Cell Reinforcement (Mj)<br>
+            <input type="range" name="shield_cell_mj" min="0" value="<?php formint('shield_cell_mj') ?>" max="10000">
+          </label><br>
+
+          <label>Guardian Shield Reinforcement (Mj)<br>
+            <input type="range" name="reinforced_mj" min="0" value="<?php formint('reinforced_mj') ?>" max="2000">
           </label><br>
 
           <label for="prismatics">Allow Prismatic Shields</label>
