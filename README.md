@@ -15,7 +15,7 @@ This tool can also be queried on its [website].
 This is a command-line application, run it with --help to get usage:
 
 ```
-elite-shield-tester 0.3.0
+elite-shield-tester 0.4.0
 Elite Dangerous Shield Optimiser
 
 USAGE:
@@ -34,41 +34,46 @@ OPTIONS:
     -d, --damage-effectiveness <damage-effectiveness>    Attacker shot success ratio, 0-1 [default: 0.5]
     -e, --explosive-dps <explosive-dps>                  Explosive damage per second [default: 0]
     -k, --kinetic-dps <kinetic-dps>                      Kinetic damage per second [default: 0]
+        --reinforced-mj <reinforced-mj>                  Mj provided by Guardian Shield Reinforcements [default: 0]
     -s, --shield-booster-count <shield-booster-count>    Number of shield boosters to fit [default: 1]
+        --shield-cell-mj <shield-cell-mj>                Mj available via Shield Cell Banks [default: 0]
         --shield-csv <shield-csv>                        Override default shield list
     -t, --thermal-dps <thermal-dps>                      Thermal damage per second [default: 0]
 ```
 
 It includes a built-in database of shields and boosters from D2EA.
 
-For example, 20 absolute DPS, 60 thermal DPS, 20% hit rate, and 4 shield boosters:
+For example, 20 absolute DPS, 60 thermal DPS, 65% hit rate, and 4 shield boosters:
 
 ```
-> elite_shield_tester -a 20 -t 60 -d 0.2 -s 4
-Loaded 45 shields and 25 boosters
-Elite Shield Tester Rust Edition v0.3.0
-Tested 113805 loadouts in 3.03ms
+> elite_shield_tester -a 20 -t 60 -d 0.65 -s 4
+Elite Shield Tester Rust Edition v0.4.0
+Loaded 45 shields and 15 boosters
+Tested 137700 loadouts in 1.82ms
 
-Attacker:
+Test Setup:
+Shield Boosters: 4
+Shield Cell Bank Pool: 0.0 Mj
+Guardian Shield Reinforcement: 0.0 Mj
 Explosive DPS: 0
   Kinetic DPS: 0
   Thermal DPS: 60
  Absolute DPS: 20
-Effectiveness: 20.0%
+Effectiveness: 65.0%
 
-Survival Time: 320.3 s
-Shield Generator: Bi-Weave - Thermal Resistance - Fast Charge
+Survival Time: 83.1 s
+Shield Generator: Prismatic - Thermal Resistance - Hi-Cap
 Shield Boosters:
- * Thermal Resistance - Super Capacitors
- * Thermal Resistance - Super Capacitors
+ * Thermal Resistance - Thermo Block
+ * Heavy Duty - Super Capacitors
  * Heavy Duty - Super Capacitors
  * Heavy Duty - Super Capacitors
 
-Shield Hitpoints: 1469 Mj
-Shield Regen: 5.1 Mj/s
-Explosive Resistance: 40.6% (2472 Mj)
-  Kinetic Resistance: 14.4% (1717 Mj)
-  Thermal Resistance: 61.1% (3778 Mj)
+Shield Hitpoints: 2526 Mj
+Shield Regen: 1.1 Mj/s
+Explosive Resistance: 44.8% (4578 Mj)
+  Kinetic Resistance: 20.5% (3179 Mj)
+  Thermal Resistance: 54.4% (5546 Mj)
 ````
 
 
