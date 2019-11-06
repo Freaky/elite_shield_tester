@@ -13,8 +13,8 @@ mod kdtree;
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct ShieldGenerator {
-    #[serde(rename = "ID")]
-    id: u8,
+    // #[serde(rename = "ID")]
+    // id: u8,
     #[serde(rename = "Type")]
     kind: String,
     engineering: String,
@@ -29,8 +29,8 @@ struct ShieldGenerator {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct ShieldBooster {
-    #[serde(rename = "ID")]
-    id: u8,
+    // #[serde(rename = "ID")]
+    // id: u8,
     engineering: String,
     experimental: String,
     shield_strength_bonus: f64,
