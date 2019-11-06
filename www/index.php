@@ -81,12 +81,26 @@ function try_calculate() {
   return $result;
 }
 
-function formint($name, $default = 0) {
+function get_formint($name, $default = 0) {
   if (isset($_GET[$name]) && is_numeric($_GET[$name])) {
-    echo (int)$_GET[$name];
+    return (int)$_GET[$name];
   } else {
-    echo $default;
+    return $default;
   }
+}
+
+function formint($name, $default = 0) {
+  echo get_formint($name, $default);
+}
+
+function num_input($name, $default, $min, $max) {
+  $val = get_formint($name, $default);
+  echo "<input type='range' name='$name' min='$min' value='$val' max='$max'>";
+}
+
+function num_input_num($name, $default, $min, $max) {
+  $val = get_formint($name, $default);
+  echo "<input type='number' name='$name' min='$min' value='$val' max='$max'>";
 }
 
 $about = empty($_GET);
@@ -162,6 +176,28 @@ $about = empty($_GET);
 
       legend {
         color: #ff3b00;;
+      }
+
+      input[type="number"] {
+        border: 1px solid rgb(245,59,0);
+        background-color: rgb(38, 25, 0);
+        color: rgb(255,59,0);
+        padding: 0.2em;
+        margin-right: 0.5em;
+        width: 4em;
+        text-align: right;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      input[type="number"]:hover,
+      input[type="number"]:focus {
+        -moz-appearance: number-input;
+      }
+
+      input[type="number"] + input[type="range"] {
+        float: right;
       }
 
       input[type="range"] {
@@ -290,13 +326,19 @@ $about = empty($_GET);
         var ranges = document.querySelectorAll("input[type='range']");
 
         ranges.forEach(function(item, i) {
-          var el = document.createElement("span");
-          el.innerHTML = item.value;
+          var el = document.createElement("input");
+          el.setAttribute("type", "number");
+          el.value = item.value;
+          el.addEventListener("input", function() {
+            if (item.value != el.value) {
+              item.value = el.value;
+            }
+          });
           item.addEventListener("input", function() {
-            el.innerHTML = item.value;
+            el.value = item.value;
           });
           form.addEventListener("reset", function() {
-            setTimeout(function() { el.innerHTML = item.value; }, 1);
+            setTimeout(function() { el.value = item.value; }, 1);
           });
           item.parentNode.insertBefore(el, item);
         });
@@ -336,16 +378,16 @@ $about = empty($_GET);
       <form id="Testform" action="<?php echo OWN_URL ?>" method="get">
         <fieldset><legend>Attacker Damage Per Second</legend>
           <label>Explosive<br>
-            <input type="range" name="dps_explosive" min="0" value="<?php formint('dps_explosive') ?>" max="200">
+            <?php num_input("dps_explosive", 0, 0, 200) ?>
           </label><br>
           <label>Thermal<br>
-            <input type="range" name="dps_thermal" min="0" value="<?php formint('dps_thermal') ?>" max="200">
+            <?php num_input("dps_thermal", 0, 0, 200) ?>
           </label><br>
           <label>Kinetic<br>
-            <input type="range" name="dps_kinetic" min="0" value="<?php formint('dps_kinetic') ?>" max="200">
+            <?php num_input("dps_kinetic", 0, 0, 200) ?>
           </label><br>
           <label>Absolute<br>
-            <input type="range" name="dps_absolute" min="0" value="<?php formint('dps_absolute') ?>" max="200">
+            <?php num_input("dps_absolute", 0, 0, 200) ?>
           </label><br><br>
           <label class="effectiveness">Effectiveness<br>
             <input type="range" name="effectiveness" min="1" value="<?php formint('effectiveness', 50) ?>" max="100">
@@ -358,11 +400,11 @@ $about = empty($_GET);
           </label><br>
 
           <label>Shield Cell Reinforcement (Mj)<br>
-            <input type="range" name="shield_cell_mj" min="0" value="<?php formint('shield_cell_mj') ?>" max="10000">
+            <?php num_input("shield_cell_mj", 0, 0, 10000) ?>
           </label><br>
 
           <label>Guardian Shield Reinforcement (Mj)<br>
-            <input type="range" name="reinforced_mj" min="0" value="<?php formint('reinforced_mj') ?>" max="2000">
+            <?php num_input("reinforced_mj", 0, 0, 2000) ?>
           </label><br>
 
           <label for="prismatics">Allow Prismatic Shields</label>
