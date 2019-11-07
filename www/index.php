@@ -420,6 +420,9 @@ $about = empty($_GET);
           <button type="submit">Calculate</button>
           <button type="reset">Reset</button>
           <button type="button" onclick="window.location.href='<?php echo OWN_URL ?>'">Restart</button>
+          <p style="font-size: smaller">
+            Figures based on an Anaconda with size 7 shields. Others coming soon.
+          </p>
         </fieldset>
 
 <?php
