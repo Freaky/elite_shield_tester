@@ -175,11 +175,11 @@ $about = empty($_GET);
       }
 
       legend {
-        color: #ff3b00;;
+        color: #ff3b00;
       }
 
       input[type="number"] {
-        border: 1px solid rgb(245,59,0);
+        border: none;
         background-color: rgb(38, 25, 0);
         color: rgb(255,59,0);
         padding: 0.2em;
@@ -238,10 +238,6 @@ $about = empty($_GET);
         color: rgb(255,59,0);
         font-weight: bold;
         width: 3em;
-      }
-
-      label.effectiveness span:after {
-        content: "%";
       }
 
       label {
@@ -388,8 +384,8 @@ $about = empty($_GET);
           </label><br>
           <label>Absolute<br>
             <?php num_input("dps_absolute", 0, 0, 200) ?>
-          </label><br><br>
-          <label class="effectiveness">Effectiveness<br>
+          </label><br>
+          <label class="effectiveness">Effectiveness (% of time taking damage)<br>
             <input type="range" name="effectiveness" min="1" value="<?php formint('effectiveness', 50) ?>" max="100">
           </label>
         </fieldset>
