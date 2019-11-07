@@ -81,6 +81,9 @@ struct TestConfig {
     /// Filter out prismatic shields
     #[structopt(long)]
     disable_prismatic: bool,
+    /// Disregard shields that take longer than this many seconds to regenerate from 50%
+    #[structopt(long)]
+    regen_time_limit: Option<f64>,
     /// Require experimental effects
     #[structopt(long)]
     force_experimental: bool,
@@ -129,7 +132,7 @@ struct BoosterStat {
     exp_modifier: f64,
     kin_modifier: f64,
     therm_modifier: f64,
-    hit_point_bonus: f64
+    hit_point_bonus: f64,
 }
 
 fn calculate_booster_stats(boosters: &[&ShieldBooster]) -> BoosterStat {
@@ -150,7 +153,7 @@ fn calculate_booster_stats(boosters: &[&ShieldBooster]) -> BoosterStat {
         exp_modifier: diminish_res(exp_modifier),
         kin_modifier: diminish_res(kin_modifier),
         therm_modifier: diminish_res(therm_modifier),
-        hit_point_bonus
+        hit_point_bonus,
     }
 }
 
@@ -173,6 +176,10 @@ fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f64 {
         - loadout.regen_rate * (1.0 - test.damage_effectiveness);
 
     loadout.hit_points / actual_dps
+}
+
+fn calculate_regen_time(loadout: &LoadoutStat) -> f64 {
+    (loadout.hit_points / 2.0) / loadout.regen_rate
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -292,8 +299,19 @@ fn main() -> Result<(), Box<dyn Error>> {
             for shield in generators.iter() {
                 loadouts += 1;
                 let mut stats = calculate_loadout_stats(&shield, &booster_stat);
-                // These are flat bonuses on top, not affected by booster stats
-                stats.hit_points += test.reinforced_mj + test.shield_cell_mj;
+                // These increase regen time (according to coriolis), and do not stack with boosters
+                stats.hit_points += test.reinforced_mj;
+
+                if test
+                    .regen_time_limit
+                    .map(|limit| calculate_regen_time(&stats) > limit)
+                    .unwrap_or(false)
+                {
+                    continue;
+                }
+
+                stats.hit_points += test.shield_cell_mj;
+
                 let survival_time = calculate_survival_time(&test, &stats);
 
                 // Negative survival times indicate regen exceeds DPS
@@ -320,7 +338,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Test Setup:");
     println!("Shield Boosters: {}", test.shield_booster_count);
     println!("Shield Cell Bank Pool: {:.1} Mj", test.shield_cell_mj);
-    println!("Guardian Shield Reinforcement: {:.1} Mj", test.reinforced_mj);
+    println!(
+        "Guardian Shield Reinforcement: {:.1} Mj",
+        test.reinforced_mj
+    );
+    if let Some(limit) = test.regen_time_limit {
+        println!("Regeneration Time Limit: {}s", limit);
+    } else {
+        println!("Regeneration Time Limit: no");
+    }
     println!("Explosive DPS: {}", test.explosive_dps);
     println!("  Kinetic DPS: {}", test.kinetic_dps);
     println!("  Thermal DPS: {}", test.thermal_dps);
@@ -334,7 +360,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Some(res) => {
             if best_survival_time < 0.0 {
-                println!("Survival Time: ∞ ({:.1} s)", best_survival_time);
+                println!("Survival Time: ∞ ({:.1}s)", best_survival_time);
             } else {
                 println!("Survival Time: {:.1} s", best_survival_time);
             }
@@ -350,7 +376,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
             println!();
             println!("Shield Hitpoints: {:.0} Mj", res.stats.hit_points);
-            println!("Shield Regen: {:.1} Mj/s", res.stats.regen_rate);
+            println!(
+                "Shield Regen: {:.1} Mj/s ({:.1}s from 50%)",
+                res.stats.regen_rate,
+                calculate_regen_time(&res.stats)
+            );
             println!(
                 "Explosive Resistance: {:.1}% ({:.0} Mj)",
                 (1.0 - res.stats.exp_res) * 100.0,

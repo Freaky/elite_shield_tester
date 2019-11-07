@@ -26,6 +26,7 @@ function try_calculate() {
     'effectiveness' => '-d',
     'shield_cell_mj' => '--shield-cell-mj',
     'reinforced_mj' => '--reinforced-mj',
+    'regen_time_limit' => '--regen-time-limit',
     'boosters' => '-s'
   );
 
@@ -41,6 +42,10 @@ function try_calculate() {
 
       if ($name == 'effectiveness') {
         $val /= 100.0;
+      }
+
+      if ($name == 'regen_time_limit' && $val == 0) {
+        continue;
       }
 
       $args[] = "$flag " . $val;
@@ -401,6 +406,10 @@ $about = empty($_GET);
 
           <label>Guardian Shield Reinforcement (Mj)<br>
             <?php num_input("reinforced_mj", 0, 0, 2000) ?>
+          </label><br>
+
+          <label>Minimum Regen Time in Seconds (from 50%)<br>
+            <?php num_input("regen_time_limit", 0, 0, 1800) ?>
           </label><br>
 
           <label for="prismatics">Allow Prismatic Shields</label>
