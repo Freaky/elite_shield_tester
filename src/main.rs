@@ -335,7 +335,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
 
     println!();
-    println!("Test Setup:");
+    println!("---- TEST SETUP ----");
     println!("Shield Boosters: {}", test.shield_booster_count);
     println!("Shield Cell Bank Pool: {:.1} Mj", test.shield_cell_mj);
     println!(
@@ -353,6 +353,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!(" Absolute DPS: {}", test.absolute_dps);
     println!("Effectiveness: {:.1}%", test.damage_effectiveness * 100.0);
     println!();
+    println!("---- TEST RESULTS ----");
 
     match best_result {
         None => {
