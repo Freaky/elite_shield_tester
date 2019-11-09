@@ -336,24 +336,28 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     println!();
     println!("---- TEST SETUP ----");
-    println!("Shield Boosters: {}", test.shield_booster_count);
-    println!("Shield Cell Bank Pool: {:.1} Mj", test.shield_cell_mj);
+    println!();
+    println!("{:>21}: {}", "Shield Boosters", test.shield_booster_count);
+    println!("{:>21}: {:.1} Mj", "Shield Cell Bank", test.shield_cell_mj);
     println!(
-        "Guardian Shield Reinforcement: {:.1} Mj",
+        "{:>21}: {:.1} Mj", "Guardian Shield Reinf",
         test.reinforced_mj
     );
-    if let Some(limit) = test.regen_time_limit {
-        println!("Regeneration Time Limit: {}s", limit);
+    let limit = if let Some(limit) = test.regen_time_limit {
+        format!("{:.1}s", limit)
     } else {
-        println!("Regeneration Time Limit: no");
-    }
-    println!("Explosive DPS: {}", test.explosive_dps);
-    println!("  Kinetic DPS: {}", test.kinetic_dps);
-    println!("  Thermal DPS: {}", test.thermal_dps);
-    println!(" Absolute DPS: {}", test.absolute_dps);
-    println!("Effectiveness: {:.1}%", test.damage_effectiveness * 100.0);
+        "no".to_owned()
+    };
+    println!("{:>21}: {}", "Prismatic Shields", if test.disable_prismatic { "no" } else { "yes" });
+    println!("{:>21}: {}", "Regen Time Limit", limit);
+    println!("{:>21}: {}", "Explosive DPS", test.explosive_dps);
+    println!("{:>21}: {}", "Kinetic DPS", test.kinetic_dps);
+    println!("{:>21}: {}", "Thermal DPS", test.thermal_dps);
+    println!("{:>21}: {}", "Absolute DPS", test.absolute_dps);
+    println!("{:>21}: {:.1}%", "Damage Effectiveness", test.damage_effectiveness * 100.0);
     println!();
     println!("---- TEST RESULTS ----");
+    println!();
 
     match best_result {
         None => {
@@ -361,39 +365,41 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Some(res) => {
             if best_survival_time < 0.0 {
-                println!("Survival Time: ∞ ({:.1}s)", best_survival_time);
+                println!("{:<16}: ∞ ({:.1}s)", "Survival Time", best_survival_time);
             } else {
-                println!("Survival Time: {:.1} s", best_survival_time);
+                println!("{:<16}: {:.1} s", "Survival Time", best_survival_time);
             }
             println!(
-                "Shield Generator: {} - {} - {}",
+                "{:<16}: {} - {} - {}", "Shield Generator",
                 res.shield.kind, res.shield.engineering, res.shield.experimental
             );
-            println!("Shield Boosters:");
+            // println!("{:<16}:", "Shield Boosters");
 
-            for booster in res.boosters {
-                println!(" * {} - {}", booster.engineering, booster.experimental);
+            let mut s = "Shield Booster".to_owned();
+            for (i, booster) in res.boosters.iter().enumerate() {
+                println!("{:<14} {}: {} - {}", s, i + 1, booster.engineering, booster.experimental);
+                s.clear();
             }
 
             println!();
-            println!("Shield Hitpoints: {:.0} Mj", res.stats.hit_points);
+            println!("{:>20}: {:.0} Mj", "Shield Hitpoints", res.stats.hit_points);
             println!(
-                "Shield Regen: {:.1} Mj/s ({:.1}s from 50%)",
+                "{:>20}: {:.1} Mj/s ({:.1}s from 50%)", "Shield Regen Rate",
                 res.stats.regen_rate,
                 calculate_regen_time(&res.stats)
             );
             println!(
-                "Explosive Resistance: {:.1}% ({:.0} Mj)",
+                "{:>20}: {:+.1}% ({:.0} Mj)", "Explosive Resistance",
                 (1.0 - res.stats.exp_res) * 100.0,
                 res.stats.hit_points / res.stats.exp_res
             );
             println!(
-                "  Kinetic Resistance: {:.1}% ({:.0} Mj)",
+                "{:>20}: {:+.1}% ({:.0} Mj)", "Kinetic Resistance",
                 (1.0 - res.stats.kin_res) * 100.0,
                 res.stats.hit_points / res.stats.kin_res
             );
             println!(
-                "  Thermal Resistance: {:.1}% ({:.0} Mj)",
+                "{:>20}: {:+.1}% ({:.0} Mj)", "Thermal Resistance",
                 (1.0 - res.stats.therm_res) * 100.0,
                 res.stats.hit_points / res.stats.therm_res
             );
