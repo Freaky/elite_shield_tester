@@ -205,6 +205,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         boosters = parse_csv(std::fs::File::open(path)?)?;
     }
 
+    let total_boosters = boosters.len();
     let boosters: Vec<ShieldBooster> = boosters
         .into_iter()
         .map(|mut booster| {
@@ -226,6 +227,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         })
         .collect();
 
+    let total_generators = generators.len();
     let generators: Vec<ShieldGenerator> = generators
         .into_iter()
         .map(|mut shield| {
@@ -237,12 +239,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter(|shield| !(test.disable_prismatic && shield.kind == "Prismatic"))
         .collect();
 
-    println!(
-        "Loaded {} shields and {} boosters",
-        generators.len(),
-        boosters.len()
-    );
-
     // Filter the booster list using Jamie van den Berge's algorithm:
     //
     // Take each pair of booster, plot their values in a kdtree (effectively
@@ -253,6 +249,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // of these pairs.
     let pairs: Vec<Vec<&ShieldBooster>> =
         boosters.iter().combinations_with_replacement(2).collect();
+    let total_pairs = pairs.len();
 
     let pair_metrics: Vec<_> = pairs
         .iter()
@@ -282,6 +279,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         .filter(|(_, item)| test.disable_filter || !tree.dominates(&item[..]))
         .map(|(p, _)| (p[0].clone(), p[1].clone()))
         .collect();
+
+    println!();
+    println!("---- SEARCH SETUP ----");
+    println!("{:>23}: {} of {}", "Candidate Shields", generators.len(), total_generators);
+    println!("{:>23}: {} of {}", "Candidate Boosters", boosters.len(), total_boosters);
+    println!("{:>23}: {} of {}", "Candidate Booster Pairs", filtered_pairs.len(), total_pairs);
 
     let mut best_survival_time = 0.0;
     let mut best_result: Option<TestResult> = None;
@@ -332,7 +335,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     );
 
-    println!("Tested {} loadouts in {:.2?}", loadouts, start.elapsed());
+    println!("{:>23}: {:.2?}", "Combinations", loadouts);
+    println!("{:>23}: {:.2?}", "Search Time", start.elapsed());
 
     println!();
     println!("---- TEST SETUP ----");
