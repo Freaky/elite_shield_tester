@@ -15,7 +15,7 @@ This tool can also be queried on its [website].
 This is a command-line application, run it with --help to get usage:
 
 ```
-elite-shield-tester 0.4.0
+elite-shield-tester 0.4.1
 Elite Dangerous Shield Optimiser
 
 USAGE:
@@ -34,6 +34,9 @@ OPTIONS:
     -d, --damage-effectiveness <damage-effectiveness>    Attacker shot success ratio, 0-1 [default: 0.5]
     -e, --explosive-dps <explosive-dps>                  Explosive damage per second [default: 0]
     -k, --kinetic-dps <kinetic-dps>                      Kinetic damage per second [default: 0]
+        --regen-time-limit <regen-time-limit>
+            Disregard shields that take longer than this many seconds to regenerate from 50%
+
         --reinforced-mj <reinforced-mj>                  Mj provided by Guardian Shield Reinforcements [default: 0]
     -s, --shield-booster-count <shield-booster-count>    Number of shield boosters to fit [default: 1]
         --shield-cell-mj <shield-cell-mj>                Mj available via Shield Cell Banks [default: 0]
@@ -41,41 +44,57 @@ OPTIONS:
     -t, --thermal-dps <thermal-dps>                      Thermal damage per second [default: 0]
 ```
 
-It includes a built-in database of shields and boosters from D2EA.
+It includes a built-in database of shields and boosters from D2EA.  Currently
+all boosters are fully-engineered A-rated and results are based on an Anaconda
+with class 7 shields.  Generalising to all ships, shield sizes, booster classes,
+and engineering levels is on the todo.
 
-For example, 20 absolute DPS, 60 thermal DPS, 65% hit rate, and 4 shield boosters:
+## Example
+
+30 kinetic DPS, 60 thermal DPS, 65% hit rate, 6 shield boosters &mdash; what's
+the best shield that still regenerates within 4 minutes?
 
 ```
-> elite_shield_tester -a 20 -t 60 -d 0.65 -s 4
-Elite Shield Tester Rust Edition v0.4.0
-Loaded 45 shields and 15 boosters
-Tested 137700 loadouts in 1.82ms
+-% elite_shield_tester -k 30 -t 40 -d 0.65 -s 6 --regen-time-limit 240
+Elite Shield Tester Rust Edition v0.4.1
 
-Test Setup:
-Shield Boosters: 4
-Shield Cell Bank Pool: 0.0 Mj
-Guardian Shield Reinforcement: 0.0 Mj
-Explosive DPS: 0
-  Kinetic DPS: 0
-  Thermal DPS: 60
- Absolute DPS: 20
-Effectiveness: 65.0%
+---- SEARCH SETUP ----
+      Candidate Shields: 45 of 45
+     Candidate Boosters: 20 of 25
+Candidate Booster Pairs: 186 of 210
+           Combinations: 3324600
+            Search Time: 51.45ms
 
-Survival Time: 83.1 s
-Shield Generator: Prismatic - Thermal Resistance - Hi-Cap
-Shield Boosters:
- * Thermal Resistance - Thermo Block
- * Heavy Duty - Super Capacitors
- * Heavy Duty - Super Capacitors
- * Heavy Duty - Super Capacitors
+---- TEST SETUP ----
 
-Shield Hitpoints: 2526 Mj
-Shield Regen: 1.1 Mj/s
-Explosive Resistance: 44.8% (4578 Mj)
-  Kinetic Resistance: 20.5% (3179 Mj)
-  Thermal Resistance: 54.4% (5546 Mj)
-````
+      Shield Boosters: 6
+     Shield Cell Bank: 0.0 Mj
+Guardian Shield Reinf: 0.0 Mj
+    Prismatic Shields: yes
+     Regen Time Limit: 240.0s
+        Explosive DPS: 0
+          Kinetic DPS: 30
+          Thermal DPS: 40
+         Absolute DPS: 0
+ Damage Effectiveness: 65.0%
 
+---- TEST RESULTS ----
+
+Survival Time   : 116.4 s
+Shield Generator: Bi-Weave - Reinforced - Fast Charge
+Shield Booster 1: Heavy Duty - Thermo Block
+               2: Heavy Duty - Thermo Block
+               3: Heavy Duty - Super Capacitors
+               4: Resistance Augmented - Thermo Block
+               5: Resistance Augmented - Thermo Block
+               6: Resistance Augmented - Thermo Block
+
+    Shield Hitpoints: 2421 Mj
+   Shield Regen Rate: 5.1 Mj/s (237.3s from 50%)
+Explosive Resistance: +72.8% (8902 Mj)
+  Kinetic Resistance: +67.4% (7419 Mj)
+  Thermal Resistance: +37.6% (3879 Mj)
+```
 
 ## Credits
 
