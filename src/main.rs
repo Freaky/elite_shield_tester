@@ -171,7 +171,7 @@ fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f64 {
             + test.absolute_dps)
         - loadout.regen_rate * (1.0 - test.damage_effectiveness);
 
-    loadout.hit_points / actual_dps
+    (loadout.hit_points + test.shield_cell_mj) / actual_dps
 }
 
 fn calculate_regen_time(loadout: &LoadoutStat) -> f64 {
@@ -323,8 +323,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 {
                     continue;
                 }
-
-                stats.hit_points += test.shield_cell_mj;
 
                 let survival_time = calculate_survival_time(&test, &stats);
 
