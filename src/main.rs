@@ -8,7 +8,6 @@ use serde::Deserialize;
 use structopt::StructOpt;
 
 mod combinations;
-mod data;
 mod kdtree;
 
 #[derive(Debug, Clone, Deserialize)]
