@@ -8,6 +8,7 @@ use serde::Deserialize;
 use structopt::StructOpt;
 
 mod combinations;
+mod data;
 mod kdtree;
 
 #[derive(Debug, Clone, Deserialize)]
@@ -282,9 +283,24 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     println!();
     println!("---- SEARCH SETUP ----");
-    println!("{:>23}: {} of {}", "Candidate Shields", generators.len(), total_generators);
-    println!("{:>23}: {} of {}", "Candidate Boosters", boosters.len(), total_boosters);
-    println!("{:>23}: {} of {}", "Candidate Booster Pairs", filtered_pairs.len(), total_pairs);
+    println!(
+        "{:>23}: {} of {}",
+        "Candidate Shields",
+        generators.len(),
+        total_generators
+    );
+    println!(
+        "{:>23}: {} of {}",
+        "Candidate Boosters",
+        boosters.len(),
+        total_boosters
+    );
+    println!(
+        "{:>23}: {} of {}",
+        "Candidate Booster Pairs",
+        filtered_pairs.len(),
+        total_pairs
+    );
 
     let mut best_survival_time = 0.0;
     let mut best_result: Option<TestResult> = None;
@@ -344,21 +360,29 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("{:>21}: {}", "Shield Boosters", test.shield_booster_count);
     println!("{:>21}: {:.1} Mj", "Shield Cell Bank", test.shield_cell_mj);
     println!(
-        "{:>21}: {:.1} Mj", "Guardian Shield Reinf",
-        test.reinforced_mj
+        "{:>21}: {:.1} Mj",
+        "Guardian Shield Reinf", test.reinforced_mj
     );
     let limit = if let Some(limit) = test.regen_time_limit {
         format!("{:.1}s", limit)
     } else {
         "no".to_owned()
     };
-    println!("{:>21}: {}", "Prismatic Shields", if test.disable_prismatic { "no" } else { "yes" });
+    println!(
+        "{:>21}: {}",
+        "Prismatic Shields",
+        if test.disable_prismatic { "no" } else { "yes" }
+    );
     println!("{:>21}: {}", "Regen Time Limit", limit);
     println!("{:>21}: {}", "Explosive DPS", test.explosive_dps);
     println!("{:>21}: {}", "Kinetic DPS", test.kinetic_dps);
     println!("{:>21}: {}", "Thermal DPS", test.thermal_dps);
     println!("{:>21}: {}", "Absolute DPS", test.absolute_dps);
-    println!("{:>21}: {:.1}%", "Damage Effectiveness", test.damage_effectiveness * 100.0);
+    println!(
+        "{:>21}: {:.1}%",
+        "Damage Effectiveness",
+        test.damage_effectiveness * 100.0
+    );
     println!();
     println!("---- TEST RESULTS ----");
     println!();
@@ -374,36 +398,48 @@ fn main() -> Result<(), Box<dyn Error>> {
                 println!("{:<16}: {:.1} s", "Survival Time", best_survival_time);
             }
             println!(
-                "{:<16}: {} - {} - {}", "Shield Generator",
-                res.shield.kind, res.shield.engineering, res.shield.experimental
+                "{:<16}: {} - {} - {}",
+                "Shield Generator",
+                res.shield.kind,
+                res.shield.engineering,
+                res.shield.experimental
             );
-            // println!("{:<16}:", "Shield Boosters");
 
             let mut s = "Shield Booster".to_owned();
             for (i, booster) in res.boosters.iter().enumerate() {
-                println!("{:<14} {}: {} - {}", s, i + 1, booster.engineering, booster.experimental);
+                println!(
+                    "{:<14} {}: {} - {}",
+                    s,
+                    i + 1,
+                    booster.engineering,
+                    booster.experimental
+                );
                 s.clear();
             }
 
             println!();
             println!("{:>20}: {:.0} Mj", "Shield Hitpoints", res.stats.hit_points);
             println!(
-                "{:>20}: {:.1} Mj/s ({:.1}s from 50%)", "Shield Regen Rate",
+                "{:>20}: {:.1} Mj/s ({:.1}s from 50%)",
+                "Shield Regen Rate",
                 res.stats.regen_rate,
                 calculate_regen_time(&res.stats)
             );
             println!(
-                "{:>20}: {:+.1}% ({:.0} Mj)", "Explosive Resistance",
+                "{:>20}: {:+.1}% ({:.0} Mj)",
+                "Explosive Resistance",
                 (1.0 - res.stats.exp_res) * 100.0,
                 res.stats.hit_points / res.stats.exp_res
             );
             println!(
-                "{:>20}: {:+.1}% ({:.0} Mj)", "Kinetic Resistance",
+                "{:>20}: {:+.1}% ({:.0} Mj)",
+                "Kinetic Resistance",
                 (1.0 - res.stats.kin_res) * 100.0,
                 res.stats.hit_points / res.stats.kin_res
             );
             println!(
-                "{:>20}: {:+.1}% ({:.0} Mj)", "Thermal Resistance",
+                "{:>20}: {:+.1}% ({:.0} Mj)",
+                "Thermal Resistance",
                 (1.0 - res.stats.therm_res) * 100.0,
                 res.stats.hit_points / res.stats.therm_res
             );
