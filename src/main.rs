@@ -385,13 +385,17 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Nothing useful to report.");
         }
         Some(res) => {
+            println!("{:>16}: {}", "Survival Time",
             if best_survival_time < 0.0 {
-                println!("{:<16}: ∞ ({:.1}s)", "Survival Time", best_survival_time);
+                "∞".to_string()
             } else {
-                println!("{:<16}: {:.1} s", "Survival Time", best_survival_time);
-            }
+                format!("{:.1} s", best_survival_time)
+            });
+
+            println!("{:>16}: {:.2} Mj/s", "Drain Rate", res.stats.hit_points / best_survival_time);
+
             println!(
-                "{:<16}: {} - {} - {}",
+                "{:>16}: {} - {} - {}",
                 "Shield Generator",
                 res.shield.kind,
                 res.shield.engineering,
@@ -401,7 +405,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             let mut s = "Shield Booster".to_owned();
             for (i, booster) in res.boosters.iter().enumerate() {
                 println!(
-                    "{:<14} {}: {} - {}",
+                    "{:>14} {}: {} - {}",
                     s,
                     i + 1,
                     booster.engineering,
