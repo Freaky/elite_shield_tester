@@ -96,6 +96,8 @@ struct TestConfig {
 
 #[derive(Debug, Clone)]
 struct TestResult {
+    actual_dps: f64,
+    survival_time: f64,
     shield: ShieldGenerator,
     boosters: Vec<ShieldBooster>,
     stats: LoadoutStat,
@@ -163,15 +165,13 @@ fn calculate_loadout_stats(shield: &ShieldGenerator, boosters: &BoosterStat) -> 
     }
 }
 
-fn calculate_survival_time(test: &TestConfig, loadout: &LoadoutStat) -> f64 {
-    let actual_dps = test.damage_effectiveness
+fn calculate_actual_dps(test: &TestConfig, loadout: &LoadoutStat) -> f64 {
+    test.damage_effectiveness
         * (test.explosive_dps * loadout.exp_res
             + test.kinetic_dps * loadout.kin_res
             + test.thermal_dps * loadout.therm_res
             + test.absolute_dps)
-        - loadout.regen_rate * (1.0 - test.damage_effectiveness);
-
-    (loadout.hit_points + test.shield_cell_mj) / actual_dps
+        - loadout.regen_rate * (1.0 - test.damage_effectiveness)
 }
 
 fn calculate_regen_time(loadout: &LoadoutStat) -> f64 {
@@ -297,7 +297,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         total_pairs
     );
 
-    let mut best_survival_time = 0.0;
     let mut best_result: Option<TestResult> = None;
 
     let mut loadouts = 0;
@@ -324,17 +323,28 @@ fn main() -> Result<(), Box<dyn Error>> {
                     continue;
                 }
 
-                let survival_time = calculate_survival_time(&test, &stats);
+                let actual_dps = calculate_actual_dps(&test, &stats);
+                let survival_time = (stats.hit_points + test.shield_cell_mj) / actual_dps;
 
-                // Negative survival times indicate regen exceeds DPS
-                if (survival_time < 0.0
-                    && (best_survival_time >= 0.0 || survival_time > best_survival_time))
-                    || (survival_time >= 0.0
-                        && best_survival_time >= 0.0
-                        && survival_time > best_survival_time)
-                {
-                    best_survival_time = survival_time;
+                let better = best_result
+                    .as_ref()
+                    .map(|r| {
+                        if actual_dps < 0.0 {
+                            // Regen exceeds effective DPS, favour better regen,
+                            // followed by the highest hitpoints.
+                            actual_dps < r.actual_dps
+                                || ((actual_dps - r.actual_dps).abs() < std::f64::EPSILON
+                                    && stats.hit_points > r.stats.hit_points)
+                        } else {
+                            r.actual_dps > 0.0 && survival_time > r.survival_time
+                        }
+                    })
+                    .unwrap_or(true);
+
+                if better {
                     best_result = Some(TestResult {
+                        actual_dps,
+                        survival_time,
                         shield: shield.clone(),
                         boosters: booster_loadout.iter().cloned().cloned().collect(),
                         stats,
@@ -385,14 +395,17 @@ fn main() -> Result<(), Box<dyn Error>> {
             println!("Nothing useful to report.");
         }
         Some(res) => {
-            println!("{:>16}: {}", "Survival Time",
-            if best_survival_time < 0.0 {
-                "∞".to_string()
-            } else {
-                format!("{:.1} s", best_survival_time)
-            });
+            println!(
+                "{:>16}: {}",
+                "Survival Time",
+                if res.survival_time < 0.0 {
+                    "∞".to_string()
+                } else {
+                    format!("{:.1} s", res.survival_time)
+                }
+            );
 
-            println!("{:>16}: {:.2} Mj/s", "Drain Rate", res.stats.hit_points / best_survival_time);
+            println!("{:>16}: {:.2} Mj/s", "Drain Rate", res.actual_dps);
 
             println!(
                 "{:>16}: {} - {} - {}",
