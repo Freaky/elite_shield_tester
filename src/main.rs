@@ -1,6 +1,7 @@
 use std::error::Error;
 use std::io::Read;
 use std::path::PathBuf;
+use std::collections::HashSet;
 
 use itertools::Itertools;
 use serde::de::DeserializeOwned;
@@ -13,6 +14,8 @@ mod kdtree;
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct ShieldGenerator {
+    ship: String,
+    class: u8,
     #[serde(rename = "Type")]
     kind: String,
     engineering: String,
@@ -92,6 +95,12 @@ struct TestConfig {
     /// Override default booster list
     #[structopt(long)]
     booster_csv: Option<PathBuf>,
+    /// Ship name
+    #[structopt(long, default_value = "Anaconda")]
+    ship: String,
+    /// Shield class (default: maximum possible)
+    #[structopt(long)]
+    shield_class: Option<u8>
 }
 
 #[derive(Debug, Clone)]
@@ -187,7 +196,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     );
 
     let mut generators: Vec<ShieldGenerator> =
-        parse_csv(&include_bytes!("../data/ShieldGeneratorVariants.csv")[..])?;
+        parse_csv(&include_bytes!("../data/Shields.csv")[..])?;
     let mut boosters: Vec<ShieldBooster> =
         parse_csv(&include_bytes!("../data/ShieldBoosterVariants.csv")[..])?;
 
@@ -223,15 +232,48 @@ fn main() -> Result<(), Box<dyn Error>> {
         })
         .collect();
 
+    let ship_generators: Vec<ShieldGenerator> = generators
+        .iter()
+        .filter(|sh| sh.ship == test.ship)
+        .cloned()
+        .collect();
+
+    if ship_generators.is_empty() {
+        println!("Unknown ship: {}", test.ship);
+        println!("Known Ships:");
+        let mut ships = generators
+            .into_iter()
+            .map(|gen| gen.ship)
+            .collect::<HashSet<String>>()
+            .into_iter()
+            .collect::<Vec<String>>();
+        ships.sort_unstable();
+
+        for ship in ships {
+            println!(" * {}", ship);
+        }
+
+        std::process::exit(1);
+    }
+
+    let generators = ship_generators;
+
+    let min_gen = generators.iter().map(|sh| sh.class).min().unwrap();
+    let max_gen = generators.iter().map(|sh| sh.class).max().unwrap();
+
+    let shield_class = test.shield_class.unwrap_or(max_gen);
+
+    if shield_class < min_gen || shield_class > max_gen {
+        println!("Invalid shield class: {}", shield_class);
+        println!("Valid classes: {} - {}", min_gen, max_gen);
+        std::process::exit(1);
+    }
+
     let total_generators = generators.len();
+
     let generators: Vec<ShieldGenerator> = generators
         .into_iter()
-        .map(|mut shield| {
-            shield.exp_res = 1.0 - shield.exp_res;
-            shield.kin_res = 1.0 - shield.kin_res;
-            shield.therm_res = 1.0 - shield.therm_res;
-            shield
-        })
+        .filter(|shield| shield.class == shield_class)
         .filter(|shield| !(test.disable_prismatic && shield.kind == "Prismatic"))
         .collect();
 
@@ -360,6 +402,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!();
     println!("---- TEST SETUP ----");
     println!();
+    println!("{:>21}: {}", "Ship Type", test.ship);
+    println!("{:>21}: {}", "Shield Class", shield_class);
     println!("{:>21}: {}", "Shield Boosters", test.shield_booster_count);
     println!("{:>21}: {:.1} Mj", "Shield Cell Bank", test.shield_cell_mj);
     println!(
