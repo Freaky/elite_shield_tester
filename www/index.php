@@ -1,13 +1,50 @@
 <?php
 
+/* This garbage fire brought to you by laziness and regret */
+
 define('TESTER_PATH', "/home/freaky/elite_shield_tester/");
 define('LOCK_PATH', '/tmp/shield_tester.lock');
 define('OWN_URL', '/shieldtester/');
 
 $Ships = array(
-  'Anaconda' => null,
-  'Fer-De-Lance' => 'data/ShieldGeneratorVariants_FDL.csv',
-  'Imperial Cutter' => 'data/ShieldGeneratorVariants_Cutter.csv',
+  'Adder' => array('boosters' => 2, 'shields' => array(1,3)),
+  'Alliance Challenger' => array('boosters' => 4, 'shields' => array(4,6)),
+  'Alliance Chieftain' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Alliance Crusader' => array('boosters' => 4, 'shields' => array(4,6)),
+  'Anaconda' => array('boosters' => 8, 'shields' => array(3,7)),
+  'Asp Explorer' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Asp Scout' => array('boosters' => 2, 'shields' => array(3,5)),
+  'Beluga Liner' => array('boosters' => 6, 'shields' => array(5,6)),
+  'Cobra Mk III' => array('boosters' => 2, 'shields' => array(3,4)),
+  'Cobra Mk IV' => array('boosters' => 2, 'shields' => array(3,4)),
+  'Diamondback Explorer' => array('boosters' => 4, 'shields' => array(3,4)),
+  'Diamondback Scout' => array('boosters' => 4, 'shields' => array(3,3)),
+  'Dolphin' => array('boosters' => 3, 'shields' => array(3,5)),
+  'Eagle' => array('boosters' => 1, 'shields' => array(1,3)),
+  'Federal Assault Ship' => array('boosters' => 4, 'shields' => array(4,5)),
+  'Federal Corvette' => array('boosters' => 8, 'shields' => array(5,7)),
+  'Federal Dropship' => array('boosters' => 4, 'shields' => array(4,6)),
+  'Federal Gunship' => array('boosters' => 4, 'shields' => array(4,6)),
+  'Fer-de-Lance' => array('boosters' => 6, 'shields' => array(3,5)),
+  'Hauler' => array('boosters' => 2, 'shields' => array(1,3)),
+  'Imperial Clipper' => array('boosters' => 4, 'shields' => array(3,7)),
+  'Imperial Courier' => array('boosters' => 4, 'shields' => array(1,3)),
+  'Imperial Cutter' => array('boosters' => 8, 'shields' => array(6,8)),
+  'Imperial Eagle' => array('boosters' => 1, 'shields' => array(1,3)),
+  'Keelback' => array('boosters' => 3, 'shields' => array(3,5)),
+  'Krait Mk II' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Krait Phantom' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Mamba' => array('boosters' => 6, 'shields' => array(3,5)),
+  'Orca' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Python' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Sidewinder' => array('boosters' => 2, 'shields' => array(1,2)),
+  'Type-10 Defender' => array('boosters' => 8, 'shields' => array(6,8)),
+  'Type-6 Transporter' => array('boosters' => 3, 'shields' => array(3,5)),
+  'Type-7 Transporter' => array('boosters' => 4, 'shields' => array(3,6)),
+  'Type-9 Heavy' => array('boosters' => 4, 'shields' => array(5,8)),
+  'Viper' => array('boosters' => 2, 'shields' => array(1,3)),
+  'Viper Mk IV' => array('boosters' => 2, 'shields' => array(3,4)),
+  'Vulture' => array('boosters' => 4, 'shields' => array(3,5)),
 );
 
 function try_lock($kind = "") {
@@ -35,6 +72,7 @@ function try_calculate() {
     'shield_cell_mj' => '--shield-cell-mj',
     'reinforced_mj' => '--reinforced-mj',
     'regen_time_limit' => '--regen-time-limit',
+    'shield_class' => '--shield-class',
     'boosters' => '-s'
   );
 
@@ -63,8 +101,8 @@ function try_calculate() {
   $trim = 0;
   $kind = ".fast";
 
-  if (isset($_GET['ship']) && $csv = $Ships[$_GET['ship']]) {
-    $args[] = "--shield-csv " . TESTER_PATH . $csv;
+  if (isset($_GET['ship']) && isset($Ships[$_GET['ship']])) {
+    $args[] = "--ship '" . $_GET['ship'] . "'";
   }
 
   if (!empty($args) && !isset($_GET['prismatics'])) {
@@ -130,7 +168,7 @@ function print_ship_select() {
     $selected = "Anaconda";
   }
 
-  foreach ($Ships as $ship => $csv) {
+  foreach ($Ships as $ship => $info) {
     echo "<option value='$ship'";
     if ($selected == $ship) {
       echo ' selected';
@@ -422,18 +460,35 @@ $about = empty($_GET);
         }
       }
 
+      var Ships = <?php echo json_encode($Ships); ?>;
+
+      function select_ship(name) {
+        var ship = Ships[document.getElementById("ShipSelect").value];
+        var shield_select = document.getElementById("ShieldSelect");
+        var booster_select = document.getElementById("BoosterSelect");
+
+        if (shield_select.value < ship.shields[0] || shield_select.value > ship.shields[1]) {
+          shield_select.value = ship.shields[1];
+          document.getElementById(shield_select.name + "_Text").value = ship.shields[1];
+        }
+        shield_select.setAttribute("min", ship.shields[0]);
+        shield_select.setAttribute("max", ship.shields[1]);
+
+        if (booster_select.value > ship.boosters) {
+          booster_select.value = ship.boosters;
+          document.getElementById(booster_select.name + "_Text").value = ship.boosters;
+        }
+        booster_select.setAttribute("max", ship.boosters);
+      }
+
       ready(function() {
-        var h1 = document.getElementById("Head");
-        h1.addEventListener("click", function() {
-
-        });
-
         var form = document.getElementById("Testform");
         var ranges = document.querySelectorAll("input[type='range']");
 
         ranges.forEach(function(item, i) {
           var el = document.createElement("input");
           el.setAttribute("type", "number");
+          el.setAttribute("id", item.name + "_Text");
           el.value = item.value;
           el.addEventListener("input", function() {
             if (item.value != el.value) {
@@ -448,6 +503,10 @@ $about = empty($_GET);
           });
           item.parentNode.insertBefore(el, item);
         });
+
+        select_ship();
+        document.getElementById("ShipSelect").addEventListener("input", select_ship);
+        document.getElementById("ShipSelect").addEventListener("change", select_ship);
       });
     </script>
 
@@ -502,13 +561,17 @@ $about = empty($_GET);
 
         <fieldset><legend>Defender</legend>
           <label>Ship
-            <select name="ship" class="select-css">
+            <select id="ShipSelect" name="ship" class="select-css">
               <?php print_ship_select(); ?>
-              <option disabled>More Soon!</option>
             </select>
           </label><br>
+
+          <label>Shield Class<br>
+            <input id="ShieldSelect" type="range" name="shield_class" value="<?php formint('shield_class', 0) ?>" min="1" max="8">
+          </label><br>
+
           <label>Shield Boosters<br>
-            <input type="range" name="boosters" value="<?php formint('boosters', 2) ?>" min="1" max="8">
+            <input id="BoosterSelect" type="range" name="boosters" value="<?php formint('boosters', 2) ?>" min="1" max="8">
           </label><br>
 
           <label>Shield Cell Reinforcement (Mj)<br>
