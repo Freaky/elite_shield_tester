@@ -132,6 +132,9 @@
       .then(function(resp) {
         Results = resp.response;
         Requesting = false;
+        setTimeout(function() {
+          document.getElementById('Result').scrollIntoView();
+        }, 100);
       })
       .catch(function(err) {
         Results = "Whoops, that didn't work: " + err.statusText;
@@ -257,7 +260,7 @@
   </fieldset>
 
   {#if Results !== false}
-    <fieldset><legend>Result</legend>
+    <fieldset id="Result"><legend>Result</legend>
       <pre>{Results}</pre>
     </fieldset>
   {/if}
