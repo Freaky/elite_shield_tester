@@ -10,7 +10,7 @@
 </style>
 
 <header>
-  <h1 id="Head"><a href=""><strong>Elite Dangerous</strong> <span>Shield Loadout Optimiser</span></a></h1>
+  <h1 id="Head"><a href="/shieldtester/"><strong>Elite Dangerous</strong> <span>Shield Loadout Optimiser</span></a></h1>
   <Nav />
 </header>
 
