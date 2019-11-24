@@ -57,6 +57,9 @@ struct TestConfig {
     /// Number of shield boosters to fit
     #[structopt(short, long, default_value = "1")]
     shield_booster_count: usize,
+    /// Shield booster rating, A-E
+    #[structopt(long, default_value = "A")]
+    shield_booster_rating: char,
     /// Explosive damage per second
     #[structopt(short, long, default_value = "0")]
     explosive_dps: f64,
@@ -102,9 +105,6 @@ struct TestConfig {
     /// Shield class (default: maximum possible)
     #[structopt(long)]
     shield_class: Option<u8>,
-    /// Booster rating, A-E
-    #[structopt(long, default_value = "A")]
-    booster_rating: char
 }
 
 #[derive(Debug, Clone)]
@@ -217,7 +217,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let total_boosters = boosters.len();
     let boosters: Vec<ShieldBooster> = boosters
         .into_iter()
-        .filter(|booster| booster.rating == test.booster_rating.to_ascii_uppercase())
+        .filter(|booster| booster.rating == test.shield_booster_rating.to_ascii_uppercase())
         .filter(|booster| {
             !test.force_experimental || booster.experimental != "No Experimental Effect"
         })
@@ -238,7 +238,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .collect();
 
     if boosters.is_empty() {
-        println!("Invalid booster rating: {}", test.booster_rating);
+        println!("Invalid booster rating: {}", test.shield_booster_rating);
         std::process::exit(1);
     }
 
@@ -415,6 +415,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("{:>21}: {}", "Ship Type", test.ship);
     println!("{:>21}: {}", "Shield Class", shield_class);
     println!("{:>21}: {}", "Shield Boosters", test.shield_booster_count);
+    println!("{:>21}: {}", "Shield Booster Rating", test.shield_booster_rating.to_ascii_uppercase());
     println!("{:>21}: {:.1} Mj", "Shield Cell Bank", test.shield_cell_mj);
     println!(
         "{:>21}: {:.1} Mj",
