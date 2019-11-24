@@ -30,6 +30,7 @@ struct ShieldGenerator {
 #[derive(Debug, Clone, PartialEq, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct ShieldBooster {
+    rating: char,
     engineering: String,
     experimental: String,
     shield_strength_bonus: f64,
@@ -100,7 +101,10 @@ struct TestConfig {
     ship: String,
     /// Shield class (default: maximum possible)
     #[structopt(long)]
-    shield_class: Option<u8>
+    shield_class: Option<u8>,
+    /// Booster rating, A-E
+    #[structopt(long, default_value = "A")]
+    booster_rating: char
 }
 
 #[derive(Debug, Clone)]
@@ -213,13 +217,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let total_boosters = boosters.len();
     let boosters: Vec<ShieldBooster> = boosters
         .into_iter()
-        .map(|mut booster| {
-            // Convert resistances to resonances
-            booster.exp_res_bonus = 1.0 - booster.exp_res_bonus;
-            booster.kin_res_bonus = 1.0 - booster.kin_res_bonus;
-            booster.therm_res_bonus = 1.0 - booster.therm_res_bonus;
-            booster
-        })
+        .filter(|booster| booster.rating == test.booster_rating.to_ascii_uppercase())
         .filter(|booster| {
             !test.force_experimental || booster.experimental != "No Experimental Effect"
         })
@@ -230,7 +228,19 @@ fn main() -> Result<(), Box<dyn Error>> {
                     || test.kinetic_dps == 0.0 && (booster.engineering == "Kinetic Resistance")
                     || test.thermal_dps == 0.0 && (booster.engineering == "Thermal Resistance"))
         })
+        .map(|mut booster| {
+            // Convert resistances to resonances
+            booster.exp_res_bonus = 1.0 - booster.exp_res_bonus;
+            booster.kin_res_bonus = 1.0 - booster.kin_res_bonus;
+            booster.therm_res_bonus = 1.0 - booster.therm_res_bonus;
+            booster
+        })
         .collect();
+
+    if boosters.is_empty() {
+        println!("Invalid booster rating: {}", test.booster_rating);
+        std::process::exit(1);
+    }
 
     let ship_generators: Vec<ShieldGenerator> = generators
         .iter()

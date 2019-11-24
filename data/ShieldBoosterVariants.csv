@@ -1,26 +1,126 @@
-ID,Engineering,Experimental,ShieldStrengthBonus,ExpResBonus,KinResBonus,ThermResBonus
-1,Kinetic Resistance,No Experimental Effect,0.2,-0.04,0.27,-0.04
-2,Kinetic Resistance,Thermo Block,0.188,-0.04,0.27,-0.0192
-3,Kinetic Resistance,Force Block,0.188,-0.04,0.2846,-0.04
-4,Kinetic Resistance,Blast Block,0.188,-0.0192,0.27,-0.04
-5,Kinetic Resistance,Super Capacitors,0.26,-0.0608,0.2554,-0.0608
-6,Thermal Resistance,No Experimental Effect,0.2,-0.04,-0.04,0.27
-7,Thermal Resistance,Thermo Block,0.188,-0.04,-0.04,0.2846
-8,Thermal Resistance,Force Block,0.188,-0.04,-0.0192,0.27
-9,Thermal Resistance,Blast Block,0.188,-0.0192,-0.04,0.27
-10,Thermal Resistance,Super Capacitors,0.26,-0.0608,-0.0608,0.2554
-11,Blast Resistance,No Experimental Effect,0.2,0.27,-0.04,-0.04
-12,Blast Resistance,Thermo Block,0.188,0.27,-0.04,-0.0192
-13,Blast Resistance,Force Block,0.188,0.27,-0.0192,-0.04
-14,Blast Resistance,Blast Block,0.188,0.2846,-0.04,-0.04
-15,Blast Resistance,Super Capacitors,0.26,0.2554,-0.0608,-0.0608
-16,Heavy Duty,No Experimental Effect,0.656,0,0,0
-17,Heavy Duty,Thermo Block,0.639,0,0,0.02
-18,Heavy Duty,Force Block,0.639,0,0.02,0
-19,Heavy Duty,Blast Block,0.639,0.02,0,0
-20,Heavy Duty,Super Capacitors,0.7388,-0.02,-0.02,-0.02
-21,Resistance Augmented,No Experimental Effect,0.2,0.17,0.17,0.17
-22,Resistance Augmented,Thermo Block,0.188,0.17,0.17,0.1866
-23,Resistance Augmented,Force Block,0.188,0.17,0.1866,0.17
-24,Resistance Augmented,Blast Block,0.188,0.1866,0.17,0.17
-25,Resistance Augmented,Super Capacitors,0.26,0.1534,0.1534,0.1534
+Rating,Engineering,Experimental,ShieldStrengthBonus,ExpResBonus,KinResBonus,ThermResBonus
+A,Kinetic Resistance,No Experimental Effect,0.20,-0.04,0.27,-0.04
+B,Kinetic Resistance,No Experimental Effect,0.16,-0.04,0.27,-0.04
+C,Kinetic Resistance,No Experimental Effect,0.12,-0.04,0.27,-0.04
+D,Kinetic Resistance,No Experimental Effect,0.08,-0.04,0.27,-0.04
+E,Kinetic Resistance,No Experimental Effect,0.04,-0.04,0.27,-0.04
+A,Kinetic Resistance,Thermo Block,0.188,-0.04,0.27,-0.0192
+B,Kinetic Resistance,Thermo Block,0.148,-0.04,0.27,-0.0192
+C,Kinetic Resistance,Thermo Block,0.109,-0.04,0.27,-0.0192
+D,Kinetic Resistance,Thermo Block,0.069,-0.04,0.27,-0.0192
+E,Kinetic Resistance,Thermo Block,0.030,-0.04,0.27,-0.0192
+A,Kinetic Resistance,Force Block,0.188,-0.04,0.2846,-0.04
+B,Kinetic Resistance,Force Block,0.148,-0.04,0.2846,-0.04
+C,Kinetic Resistance,Force Block,0.109,-0.04,0.2846,-0.04
+D,Kinetic Resistance,Force Block,0.069,-0.04,0.2846,-0.04
+E,Kinetic Resistance,Force Block,0.030,-0.04,0.2846,-0.04
+A,Kinetic Resistance,Blast Block,0.188,-0.0192,0.27,-0.04
+B,Kinetic Resistance,Blast Block,0.148,-0.0192,0.27,-0.04
+C,Kinetic Resistance,Blast Block,0.109,-0.0192,0.27,-0.04
+D,Kinetic Resistance,Blast Block,0.069,-0.0192,0.27,-0.04
+E,Kinetic Resistance,Blast Block,0.030,-0.0192,0.27,-0.04
+A,Kinetic Resistance,Super Capacitors,0.260,-0.0608,0.2554,-0.0608
+B,Kinetic Resistance,Super Capacitors,0.218,-0.0608,0.2554,-0.0608
+C,Kinetic Resistance,Super Capacitors,0.176,-0.0608,0.2554,-0.0608
+D,Kinetic Resistance,Super Capacitors,0.134,-0.0608,0.2554,-0.0608
+E,Kinetic Resistance,Super Capacitors,0.030,-0.0608,0.2554,-0.0608
+A,Thermal Resistance,No Experimental Effect,0.20,-0.04,-0.04,0.27
+B,Thermal Resistance,No Experimental Effect,0.16,-0.04,-0.04,0.27
+C,Thermal Resistance,No Experimental Effect,0.12,-0.04,-0.04,0.27
+D,Thermal Resistance,No Experimental Effect,0.08,-0.04,-0.04,0.27
+E,Thermal Resistance,No Experimental Effect,0.04,-0.04,-0.04,0.27
+A,Thermal Resistance,Thermo Block,0.188,-0.04,-0.04,0.2846
+B,Thermal Resistance,Thermo Block,0.148,-0.04,-0.04,0.2846
+C,Thermal Resistance,Thermo Block,0.109,-0.04,-0.04,0.2846
+D,Thermal Resistance,Thermo Block,0.069,-0.04,-0.04,0.2846
+E,Thermal Resistance,Thermo Block,0.030,-0.04,-0.04,0.2846
+A,Thermal Resistance,Force Block,0.188,-0.04,-0.0192,0.27
+B,Thermal Resistance,Force Block,0.148,-0.04,-0.0192,0.27
+C,Thermal Resistance,Force Block,0.109,-0.04,-0.0192,0.27
+D,Thermal Resistance,Force Block,0.069,-0.04,-0.0192,0.27
+E,Thermal Resistance,Force Block,0.030,-0.04,-0.0192,0.27
+A,Thermal Resistance,Blast Block,0.188,-0.0192,-0.04,0.27
+B,Thermal Resistance,Blast Block,0.148,-0.0192,-0.04,0.27
+C,Thermal Resistance,Blast Block,0.109,-0.0192,-0.04,0.27
+D,Thermal Resistance,Blast Block,0.069,-0.0192,-0.04,0.27
+E,Thermal Resistance,Blast Block,0.030,-0.0192,-0.04,0.27
+A,Thermal Resistance,Super Capacitors,0.260,-0.0608,-0.0608,0.2554
+B,Thermal Resistance,Super Capacitors,0.218,-0.0608,-0.0608,0.2554
+C,Thermal Resistance,Super Capacitors,0.176,-0.0608,-0.0608,0.2554
+D,Thermal Resistance,Super Capacitors,0.134,-0.0608,-0.0608,0.2554
+E,Thermal Resistance,Super Capacitors,0.030,-0.0608,-0.0608,0.2554
+A,Blast Resistance,No Experimental Effect,0.2,0.27,-0.04,-0.04
+B,Blast Resistance,No Experimental Effect,0.2,0.27,-0.04,-0.04
+C,Blast Resistance,No Experimental Effect,0.2,0.27,-0.04,-0.04
+D,Blast Resistance,No Experimental Effect,0.2,0.27,-0.04,-0.04
+E,Blast Resistance,No Experimental Effect,0.2,0.27,-0.04,-0.04
+A,Blast Resistance,Thermo Block,0.188,0.27,-0.04,-0.0192
+B,Blast Resistance,Thermo Block,0.148,0.27,-0.04,-0.0192
+C,Blast Resistance,Thermo Block,0.109,0.27,-0.04,-0.0192
+D,Blast Resistance,Thermo Block,0.069,0.27,-0.04,-0.0192
+E,Blast Resistance,Thermo Block,0.030,0.27,-0.04,-0.0192
+A,Blast Resistance,Force Block,0.188,0.27,-0.0192,-0.04
+B,Blast Resistance,Force Block,0.148,0.27,-0.0192,-0.04
+C,Blast Resistance,Force Block,0.109,0.27,-0.0192,-0.04
+D,Blast Resistance,Force Block,0.069,0.27,-0.0192,-0.04
+E,Blast Resistance,Force Block,0.030,0.27,-0.0192,-0.04
+A,Blast Resistance,Blast Block,0.188,0.2846,-0.04,-0.04
+B,Blast Resistance,Blast Block,0.148,0.2846,-0.04,-0.04
+C,Blast Resistance,Blast Block,0.109,0.2846,-0.04,-0.04
+D,Blast Resistance,Blast Block,0.069,0.2846,-0.04,-0.04
+E,Blast Resistance,Blast Block,0.030,0.2846,-0.04,-0.04
+A,Blast Resistance,Super Capacitors,0.260,0.2554,-0.0608,-0.0608
+B,Blast Resistance,Super Capacitors,0.218,0.2554,-0.0608,-0.0608
+C,Blast Resistance,Super Capacitors,0.176,0.2554,-0.0608,-0.0608
+D,Blast Resistance,Super Capacitors,0.134,0.2554,-0.0608,-0.0608
+E,Blast Resistance,Super Capacitors,0.030,0.2554,-0.0608,-0.0608
+A,Heavy Duty,No Experimental Effect,0.656,0,0,0
+B,Heavy Duty,No Experimental Effect,0.601,0,0,0
+C,Heavy Duty,No Experimental Effect,0.546,0,0,0
+D,Heavy Duty,No Experimental Effect,0.490,0,0,0
+E,Heavy Duty,No Experimental Effect,0.435,0,0,0
+A,Heavy Duty,Thermo Block,0.639,0,0,0.02
+B,Heavy Duty,Thermo Block,0.585,0,0,0.02
+C,Heavy Duty,Thermo Block,0.530,0,0,0.02
+D,Heavy Duty,Thermo Block,0.475,0,0,0.02
+E,Heavy Duty,Thermo Block,0.421,0,0,0.02
+A,Heavy Duty,Force Block,0.639,0,0.02,0
+B,Heavy Duty,Force Block,0.585,0,0.02,0
+C,Heavy Duty,Force Block,0.530,0,0.02,0
+D,Heavy Duty,Force Block,0.475,0,0.02,0
+E,Heavy Duty,Force Block,0.421,0,0.02,0
+A,Heavy Duty,Blast Block,0.639,0.02,0,0
+B,Heavy Duty,Blast Block,0.585,0.02,0,0
+C,Heavy Duty,Blast Block,0.530,0.02,0,0
+D,Heavy Duty,Blast Block,0.475,0.02,0,0
+E,Heavy Duty,Blast Block,0.421,0.02,0,0
+A,Heavy Duty,Super Capacitors,0.7388,-0.02,-0.02,-0.02
+B,Heavy Duty,Super Capacitors,0.6810,-0.02,-0.02,-0.02
+C,Heavy Duty,Super Capacitors,0.6230,-0.02,-0.02,-0.02
+D,Heavy Duty,Super Capacitors,0.5650,-0.02,-0.02,-0.02
+E,Heavy Duty,Super Capacitors,0.5070,-0.02,-0.02,-0.02
+A,Resistance Augmented,No Experimental Effect,0.2,0.17,0.17,0.17
+B,Resistance Augmented,No Experimental Effect,0.2,0.17,0.17,0.17
+C,Resistance Augmented,No Experimental Effect,0.2,0.17,0.17,0.17
+D,Resistance Augmented,No Experimental Effect,0.2,0.17,0.17,0.17
+E,Resistance Augmented,No Experimental Effect,0.2,0.17,0.17,0.17
+A,Resistance Augmented,Thermo Block,0.188,0.17,0.17,0.1866
+B,Resistance Augmented,Thermo Block,0.148,0.17,0.17,0.1866
+C,Resistance Augmented,Thermo Block,0.109,0.17,0.17,0.1866
+D,Resistance Augmented,Thermo Block,0.069,0.17,0.17,0.1866
+E,Resistance Augmented,Thermo Block,0.030,0.17,0.17,0.1866
+A,Resistance Augmented,Force Block,0.188,0.17,0.1866,0.17
+B,Resistance Augmented,Force Block,0.148,0.17,0.1866,0.17
+C,Resistance Augmented,Force Block,0.109,0.17,0.1866,0.17
+D,Resistance Augmented,Force Block,0.069,0.17,0.1866,0.17
+E,Resistance Augmented,Force Block,0.030,0.17,0.1866,0.17
+A,Resistance Augmented,Blast Block,0.188,0.1866,0.17,0.17
+B,Resistance Augmented,Blast Block,0.148,0.1866,0.17,0.17
+C,Resistance Augmented,Blast Block,0.109,0.1866,0.17,0.17
+D,Resistance Augmented,Blast Block,0.069,0.1866,0.17,0.17
+E,Resistance Augmented,Blast Block,0.030,0.1866,0.17,0.17
+A,Resistance Augmented,Super Capacitors,0.260,0.1534,0.1534,0.1534
+B,Resistance Augmented,Super Capacitors,0.218,0.1534,0.1534,0.1534
+C,Resistance Augmented,Super Capacitors,0.176,0.1534,0.1534,0.1534
+D,Resistance Augmented,Super Capacitors,0.134,0.1534,0.1534,0.1534
+E,Resistance Augmented,Super Capacitors,0.030,0.1534,0.1534,0.1534
