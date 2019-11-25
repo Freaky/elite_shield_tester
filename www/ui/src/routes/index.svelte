@@ -43,7 +43,7 @@
     "Viper Mk IV": { "boosters": 2, "shields": [ 3, 4 ] },
     "Vulture": { "boosters": 4, "shields": [ 3, 5 ] }
   };
-
+  const Boosters = ['A', 'B', 'C', 'D', 'E'];
   const Defaults = {
     e: 0,
     t: 0,
@@ -56,7 +56,8 @@
     prismatic: false,
     reinforced_mj: 0,
     scb_mj: 0,
-    regen_time_limit: 0
+    regen_time_limit: 0,
+    booster_rating: Boosters[0]
   };
 
   let form = JSON.parse(JSON.stringify(Defaults));
@@ -69,7 +70,6 @@
   function route() {
     if (typeof window !== 'undefined' && window.location && window.location.href) {
       window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        initial = false;
         if (typeof form[key] == 'number') {
           if (/^\d+$/.test(value)) {
             form[key] = Number(value);
@@ -222,6 +222,17 @@
         min="1"
         max="{Ships[form.ship].boosters}"
         bind:value={form.boosters}></Range>
+    </label><br>
+
+    <label>Shield Booster Rating<br>
+      <select
+        class="select-css"
+        name="booster_rating"
+        bind:value={form.booster_rating}>
+        {#each Boosters as rating}
+          <option value={rating}>{rating}</option>
+        {/each}
+      </select>
     </label><br>
 
     <label>Shield Cell Reinforcement (Mj)<br>

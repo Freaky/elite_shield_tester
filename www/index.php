@@ -92,6 +92,10 @@ function try_calculate() {
     }
   }
 
+  if (isset($_GET['booster_rating']) && in_array($_GET['booster_rating'], array('A','B','C','D','E'), true)) {
+    $args[] = '--shield-booster-rating ' . $_GET['booster_rating'];
+  }
+
   $trim = 0;
   $kind = ".fast";
 
