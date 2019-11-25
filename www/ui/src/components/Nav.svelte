@@ -15,6 +15,6 @@
 <nav>
   <ul>
     <li><a ref=prefetch href="about">About</a></li>
-    <li><a href="https://github.com/Freaky/elite_shield_tester">Github</a></li>
+    <li><a target="_top" href="https://github.com/Freaky/elite_shield_tester">Github</a></li>
   </ul>
 </nav>
