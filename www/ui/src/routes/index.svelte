@@ -192,7 +192,7 @@
         name="effectiveness"
         min="1"
         max="100"
-        value={form.effectiveness}></Range>
+        bind:value={form.effectiveness}></Range>
     </label>
   </fieldset>
 
