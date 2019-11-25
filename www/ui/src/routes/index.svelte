@@ -64,8 +64,7 @@
 
   route();
   let Reset = JSON.parse(JSON.stringify(form));
-  let Requesting = false;
-  let Results = false;
+  let Result = false;
 
   function route() {
     if (typeof window !== 'undefined' && window.location && window.location.href) {
@@ -116,29 +115,24 @@
 
   function handleReboot() {
     form = JSON.parse(JSON.stringify(Defaults));
-    Results = false;
+    Reset = JSON.parse(JSON.stringify(Defaults));
+    Result = false;
     history.pushState(form, "", BaseURL);
   }
 
   function handleSubmit(event) {
-    if (Requesting) {
-      return;
-    }
-
     pushState();
+    Reset = JSON.parse(JSON.stringify(form));
 
-    Requesting = true;
-    request(BaseURL + 'calculate.php?' + formToQuery())
+    Result = request(BaseURL + 'calculate.php?' + formToQuery())
       .then(function(resp) {
-        Results = resp.response;
-        Requesting = false;
         setTimeout(function() {
           document.getElementById('Result').scrollIntoView();
         }, 100);
+        return resp.response;
       })
       .catch(function(err) {
-        Results = "Whoops, that didn't work: " + err.statusText;
-        Requesting = false;
+        return err.statusText;
       });
   }
 
@@ -265,14 +259,24 @@
   </fieldset>
 
   <fieldset><legend>Neat Buttons</legend>
-    <button type="submit" disabled={Requesting === true}>{#if Requesting === true}Calculating&hellip;{:else}Calculate{/if}</button>
-    <button type="button" on:click={handleReset} title="Reset to this URL's parameters">Reset</button>
-    <button type="button" on:click={handleReboot} title="Reset to default parameters">Restart</button>
+    {#await Result}
+    <button type="submit" disabled style="opacity: 0.5">⏳ Calculate</button>
+    {:then result}
+    <button type="submit">⚔ Calculate</button>
+    {/await}
+    <button type="button" on:click={handleReset} title="Reset to this URL's parameters">⎌ Reset</button>
+    <button type="button" on:click={handleReboot} title="Reset to default parameters">⎚ Restart</button>
   </fieldset>
 
-  {#if Results !== false}
+  {#if Result !== false}
     <fieldset id="Result"><legend>Result</legend>
-      <pre>{Results}</pre>
+      {#await Result}
+      <p>Calculating...</p>
+      {:then result}
+      <pre>{result}</pre>
+      {:catch err}
+      <p>Uh oh, that didn't work: {err}</p>
+      {/await}
     </fieldset>
   {/if}
 </form>
