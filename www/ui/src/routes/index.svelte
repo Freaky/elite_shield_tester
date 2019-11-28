@@ -68,7 +68,7 @@
 
   function route() {
     if (typeof window !== 'undefined' && window.location && window.location.href) {
-      window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+      decodeURI(window.location.href).replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
         if (typeof form[key] == 'number') {
           if (/^\d+$/.test(value)) {
             form[key] = Number(value);
@@ -241,7 +241,7 @@
       <Range
         name="reinforced_mj"
         min="0"
-        max="2000"
+        max="2500"
         bind:value={form.reinforced_mj}>
       </Range>
     </label><br>
