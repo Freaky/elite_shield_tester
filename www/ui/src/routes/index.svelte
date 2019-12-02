@@ -1,5 +1,8 @@
 <script>
+  import { stores } from '@sapper/app';
   import Range from '../components/Range.svelte';
+
+  const { page } = stores();
 
   const BaseURL = "/shieldtester/";
 
@@ -61,15 +64,16 @@
   };
 
   let form = JSON.parse(JSON.stringify(Defaults));
+  $: route($page.query || {});
 
-  route();
   let Reset = JSON.parse(JSON.stringify(form));
   let Result = false;
 
-  function route() {
-    if (typeof window !== 'undefined' && window.location && window.location.href) {
-      decodeURI(window.location.href).replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-        if (typeof form[key] == 'number') {
+  function route(query) {
+    Object.entries(form).forEach(([key, oldvalue]) => {
+      let value;
+      if (value = query[key]) {
+        if (typeof oldvalue == 'number') {
           if (/^\d+$/.test(value)) {
             form[key] = Number(value);
           }
@@ -80,8 +84,8 @@
             form[key] = value;
           }
         }
-      });
-    }
+      }
+    });
   }
 
   function request(url, method) {
@@ -139,13 +143,7 @@
   function pushState() {
     history.pushState(form, "", BaseURL + "?" + formToQuery());
   }
-
-  function handleBackNavigation(event) {
-    route();
-  }
 </script>
-
-<svelte:window on:popstate={handleBackNavigation} />
 
 <form id="Testform" action="{BaseURL}calculate.php" method="get" on:submit|preventDefault={handleSubmit}>
   <fieldset><legend>Attacker Damage Per Second</legend>
